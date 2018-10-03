@@ -1,7 +1,7 @@
 # hacPack - Docs
 
 ## TitleID: --titleid
-Title id is 8-bytes hex value which connects ncas to earch other  
+Title id is 8-bytes hex value which connects ncas to each other  
 Valid Title id range is: 0100000000000000 - 01ffffffffffffff  
 If you are repacking ncas, make sure to use the original title id of nca  
 ##### Switch Title ID template:
@@ -39,13 +39,13 @@ Valid SDK Version range is: 000B0000 - 00FFFFFF
 
 ## Program NCA: --ncatype program
 Program NCA contains 3 sections  
-Section 0 (known as exefs) contains main and main.npdm, it also may contain rtl and subsdks  
+Section 0 (known as exefs) contains main and main.npdm, it also may contain rtld and subsdks  
 Section 1 (known as romfs) contains romfs data  
 Section 2 (known as logo) contains logo data including "NintendoLogo.png" and "StartupMovie.gif"  
 You can use --nologo to skip logo and --noromfs to skip romfs section in program nca  
 ```
-*nix: hacpack -o ./out/ --type nca --ncatype program --titleid 0104444444444000 --exefsdir ./exefs/ --romfsdir ./romfs/ --logodir= ./logo/  
-Windows: hacpack.exe -o .\out\ --type nca --ncatype program --titleid 0104444444444000 --exefsdir .\exefs\ --romfsdir .\romfs\ --logodir= .\logo\
+*nix: hacpack -o ./out/ --type nca --ncatype program --titleid 0104444444444000 --exefsdir ./exefs/ --romfsdir ./romfs/ --logodir ./logo/  
+Windows: hacpack.exe -o .\out\ --type nca --ncatype program --titleid 0104444444444000 --exefsdir .\exefs\ --romfsdir .\romfs\ --logodir .\logo\
 ```
 
 ## Control NCA: --ncatype control
@@ -57,19 +57,19 @@ Windows: hacpack.exe -o .\out\ --type nca --ncatype control --titleid 0104444444
 ```
 ## Manual NCA: --ncatype manual
 Manual NCA contains 1 section  
-It contains "Legla Information" or "Offline-Manual" html documents  
+It contains "Legal Information" or "Offline-Manual" html documents  
 ```
 *nix: hacpack -o ./out/ --type nca --ncatype manual --titleid 0104444444444000 --romfsdir ./manual/
 Windows: hacpack.exe -o .\out\ --type nca --ncatype manual --titleid 0104444444444000 --romfsdir .\manual\
 ```
 ## Data NCA: --ncatype data
-Data NCA contains 1 sections  
+Data NCA contains 1 section  
 ```
 *nix: hacpack -o ./out/ --type nca --ncatype data --titleid 0104444444444000 --romfsdir ./data/
 Windows: hacpack.exe -o .\out\ --type nca --ncatype data --titleid 0104444444444000 --romfsdir .\data\
 ```
 ## PublicData NCA: --ncatype publicdata
-PublicData NCA contains 1 sections  
+PublicData NCA contains 1 section  
 ```
 *nix: hacpack -o ./out/ --type nca --ncatype publicdata --titleid 0104444444444001 --romfsdir ./publicdata/
 Windows: hacpack.exe -o .\out\ --type nca --ncatype publicdata --titleid 0104444444444001 --romfsdir .\publicdata\
