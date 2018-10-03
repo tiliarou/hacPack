@@ -28,11 +28,11 @@ Options:
 General options:  
 -k, --keyset             Set keyset filepath, default filepath is ./keys.dat  
 -h, --help               Display usage  
---tempdir                Set temp directory filepath, default filepath is ./hacbpack_temp/  
+--tempdir                Set temp directory filepath, default filepath is ./hacpack_temp/  
 --keygeneration          Set keygeneration for encrypting key area, default keygeneration is 1  
 --plaintext              Skip encrypting sections and set section header block crypto type to plaintext  
 --sdkversion             Set SDK version in hex, default SDK version is 000C1100  
---keyareakey             Set key area key 2 in hex with 16 bytes lenght  
+--keyareakey             Set key area key 2 in hex with 16 bytes length  
 Required options:  
 -o, --output             Set output directory  
 --type                   Set file type [nca, nsp]  
@@ -56,7 +56,7 @@ Metadata NCA options:
 --titletype              Set cnmt title type [application, addon]  
 --programnca             Set program nca path  
 --controlnca             Set control nca path  
---legalca                Set legal information nca path  
+--legalnca               Set legal information nca path  
 --htmldocnca             Set offline manual nca path  
 --datanca                Set data nca path  
 --digest                 Set cnmt digest  
