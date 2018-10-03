@@ -18,21 +18,30 @@ void nacp_process(hp_settings_t *settings)
         exit(EXIT_FAILURE);
     }
 
-    int c = 0;;
-    // Check Title Name
+    int tname = 0;
+    int tauthor = 0;
+    uint64_t base_off = 0;
+    for (int i=1; i<=16; i++)
+    {
+        fseeko64(fl, base_off, SEEK_SET);
+        tname = fgetc(fl);
+        fseeko64(fl, base_off + 0x200, SEEK_SET);
+        tauthor = fgetc(fl);
+        base_off += 0x300;
+        if (tname != 0 && tauthor != 0)
+            break;
+    }
+    // Validate Title Name
     printf("Validating Title Name\n");
-    c = fgetc(fl);
-    if (c == 0)
+    if (tname == 0)
     {
         fprintf(stderr, "Error: Invalid Title Name in control.nacp\n");
         exit(EXIT_FAILURE);
     }
 
-    // Check Author
+    // Validate Author
     printf("Validating Author\n");
-    fseeko64(fl, 0x200, SEEK_SET);
-    c = fgetc(fl);
-    if (c == 0)
+    if (tauthor == 0)
     {
         fprintf(stderr, "Error: Invalid Author in control.nacp\n");
         exit(EXIT_FAILURE);
