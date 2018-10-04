@@ -242,9 +242,9 @@ namespace hacPack_GUI
             txt_legalinfo_nca.IsEnabled = true;
             txt_legalinfo_nca.Text = string.Empty;
             btn_browse_legalinfo_nca.IsEnabled = true;
-            txt_offlinemanual_nca.IsEnabled = true;
-            txt_offlinemanual_nca.Text = string.Empty;
-            btn_browse_offlinemanual_nca.IsEnabled = true;
+            txt_htmldocument_nca.IsEnabled = true;
+            txt_htmldocument_nca.Text = string.Empty;
+            btn_browse_htmldocument_nca.IsEnabled = true;
             txt_data_nca.IsEnabled = true;
             txt_data_nca.Text = string.Empty;
             btn_browse_data_nca.IsEnabled = true;
@@ -264,9 +264,9 @@ namespace hacPack_GUI
             txt_legalinfo_nca.IsEnabled = false;
             txt_legalinfo_nca.Text = string.Empty;
             btn_browse_legalinfo_nca.IsEnabled = false;
-            txt_offlinemanual_nca.IsEnabled = false;
-            txt_offlinemanual_nca.Text = string.Empty;
-            btn_browse_offlinemanual_nca.IsEnabled = false;
+            txt_htmldocument_nca.IsEnabled = false;
+            txt_htmldocument_nca.Text = string.Empty;
+            btn_browse_htmldocument_nca.IsEnabled = false;
             txt_data_nca.IsEnabled = false;
             txt_data_nca.Text = string.Empty;
             btn_browse_data_nca.IsEnabled = false;
@@ -290,9 +290,9 @@ namespace hacPack_GUI
             browse_file(ref txt_legalinfo_nca);
         }
 
-        private void btn_browse_offlinemanual_nca_Click(object sender, RoutedEventArgs e)
+        private void btn_browse_htmldocument_nca_Click(object sender, RoutedEventArgs e)
         {
-            browse_file(ref txt_offlinemanual_nca);
+            browse_file(ref txt_htmldocument_nca);
         }
 
         private void btn_browse_data_nca_Click(object sender, RoutedEventArgs e)
@@ -397,9 +397,9 @@ namespace hacPack_GUI
                             if (txt_data_nca.Text != string.Empty)
                                 args += "--datanca \"" + txt_data_nca.Text + "\" ";
                             if (txt_legalinfo_nca.Text != string.Empty)
-                                args += "--legalnca \"" + txt_data_nca.Text + "\" ";
-                            if (txt_offlinemanual_nca.Text != string.Empty)
-                                args += "--htmldocnca \"" + txt_offlinemanual_nca.Text + "\"";
+                                args += "--legalnca \"" + txt_legalinfo_nca.Text + "\" ";
+                            if (txt_htmldocument_nca.Text != string.Empty)
+                                args += "--htmldocnca \"" + txt_htmldocument_nca.Text + "\"";
                             launch_hacpack(args);
                         }
                         break;

@@ -5,7 +5,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:hacPack_GUI"
         mc:Ignorable="d"
-        Title="hacPack GUI v1.01 by The-4n" Height="565.615" Width="766.694" WindowStartupLocation="Manual" ResizeMode="NoResize" Loaded="Window_Loaded">
+        Title="hacPack GUI v1.02 by The-4n" Height="565.615" Width="766.694" WindowStartupLocation="Manual" ResizeMode="NoResize" Loaded="Window_Loaded">
     <Grid HorizontalAlignment="Left" Width="759" Margin="0,0,-5.667,0.333">
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="433*"/>
@@ -50,9 +50,9 @@
                     <Label x:Name="lbl_legalinfo_nca" Content="Legal Information NCA:" HorizontalAlignment="Left" Margin="8,97,0,0" VerticalAlignment="Top" RenderTransformOrigin="0,0.561"/>
                     <TextBox x:Name="txt_legalinfo_nca" HorizontalAlignment="Left" Height="22" Margin="146,99,0,0" TextWrapping="NoWrap" VerticalAlignment="Top" Width="208" IsReadOnly="True"/>
                     <Button x:Name="btn_browse_legalinfo_nca" Content="Browse" HorizontalAlignment="Left" Margin="359,99,0,0" VerticalAlignment="Top" Width="102" Height="22" Click="btn_browse_legalinfo_nca_Click" />
-                    <Label x:Name="lbl_offlinemanual_nca" Content="Offline Manual NCA:" HorizontalAlignment="Left" Margin="23,124,0,0" VerticalAlignment="Top" RenderTransformOrigin="0,0.561"/>
-                    <TextBox x:Name="txt_offlinemanual_nca" HorizontalAlignment="Left" Height="22" Margin="146,126,0,0" TextWrapping="NoWrap" VerticalAlignment="Top" Width="208" IsReadOnly="True"/>
-                    <Button x:Name="btn_browse_offlinemanual_nca" Content="Browse" HorizontalAlignment="Left" Margin="359,126,0,0" VerticalAlignment="Top" Width="102" Height="22" Click="btn_browse_offlinemanual_nca_Click" />
+                    <Label x:Name="lbl_htmldocument_nca" Content="Html Document NCA:" HorizontalAlignment="Left" Margin="16,124,0,0" VerticalAlignment="Top" RenderTransformOrigin="0,0.561"/>
+                    <TextBox x:Name="txt_htmldocument_nca" HorizontalAlignment="Left" Height="22" Margin="146,126,0,0" TextWrapping="NoWrap" VerticalAlignment="Top" Width="208" IsReadOnly="True"/>
+                    <Button x:Name="btn_browse_htmldocument_nca" Content="Browse" HorizontalAlignment="Left" Margin="359,126,0,0" VerticalAlignment="Top" Width="102" Height="22" Click="btn_browse_htmldocument_nca_Click" />
                     <Label x:Name="lbl_data_nca" Content="Data NCA:" HorizontalAlignment="Left" Margin="76,151,0,0" VerticalAlignment="Top" RenderTransformOrigin="0,0.561"/>
                     <TextBox x:Name="txt_data_nca" HorizontalAlignment="Left" Height="22" Margin="146,153,0,0" TextWrapping="NoWrap" VerticalAlignment="Top" Width="208" IsReadOnly="True"/>
                     <Button x:Name="btn_browse_data_nca" Content="Browse" HorizontalAlignment="Left" Margin="359,153,0,0" VerticalAlignment="Top" Width="102" Height="22" Click="btn_browse_data_nca_Click" />
