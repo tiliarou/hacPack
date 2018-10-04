@@ -1,3 +1,7 @@
+v1.02
+GUI:
+Fixed a bug cause failure of building meta ncas with legal information nca and without data nca
+
 v1.01
 Fixed a bug cause failure of control.nacp validation in titles without AmericanEnglish title name and title author
 
