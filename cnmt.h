@@ -51,6 +51,8 @@ typedef struct {
 
 void cnmt_create_application(filepath_t *cnmt_filepath, hp_settings_t *settings);
 void cnmt_create_addon(filepath_t *cnmt_filepath, hp_settings_t *settings);
+void cnmt_create_systemprogram(filepath_t *cnmt_filepath, hp_settings_t *settings);
+void cnmt_create_systemdata(filepath_t *cnmt_filepath, hp_settings_t *settings);
 void cnmt_set_content_record(filepath_t *nca_path, cnmt_content_record_t *content_record);
 
 #endif

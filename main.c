@@ -27,7 +27,7 @@ static void usage(void)
             "--keygeneration          Set keygeneration for encrypting key area, default keygeneration is 1\n"
             "--plaintext              Skip encrypting sections and set section header block crypto type to plaintext\n"
             "--sdkversion             Set SDK version in hex, default SDK version is 000C1100\n"
-            "--keyareakey             Set key area key 2 in hex with 16 bytes lenght\n"
+            "--keyareakey             Set key area key 2 in hex with 16 bytes length\n"
             "Required options:\n"
             "-o, --output             Set output directory\n"
             "--type                   Set file type [nca, nsp]\n"
@@ -48,7 +48,8 @@ static void usage(void)
             "PublicData NCA options:\n"
             "--romfsdir               Set publicdata romfs directory path\n"
             "Metadata NCA options:\n"
-            "--titletype              Set cnmt title type [application, addon]\n"
+            "--titletype              Set cnmt title type [application, addon, systemprogram, systemdata]\n"
+            "--titleversion           Set title-version in hex with 4 bytes length, default value is 0x0\n"
             "--programnca             Set program nca path\n"
             "--controlnca             Set control nca path\n"
             "--legalnca               Set legal information nca path\n"
@@ -130,6 +131,7 @@ int main(int argc, char **argv)
                 {"publicdatanca", 1, NULL, 21},
                 {"ncadir", 1, NULL, 22},
                 {"digest", 1, NULL, 23},
+                {"titleversion", 1, NULL, 24},
                 {NULL, 0, NULL, 0},
             };
 
@@ -183,6 +185,10 @@ int main(int argc, char **argv)
                 settings.title_type = TITLE_TYPE_APPLICATION;
             else if (!strcmp(optarg, "addon"))
                 settings.title_type = TITLE_TYPE_ADDON;
+            else if (!strcmp(optarg, "systemprogram"))
+                settings.title_type = TITLE_TYPE_SYSTEMPROGRAM;
+            else if (!strcmp(optarg, "systemdata"))
+                settings.title_type = TITLE_TYPE_SYSTEMDATA;
             else
             {
                 fprintf(stderr, "Error: Invalid titletype: %s\n", optarg);
@@ -262,6 +268,9 @@ int main(int argc, char **argv)
             break;
         case 23:
             parse_hex_key(settings.digest, optarg, 0x20);
+            break;
+        case 24:
+            settings.title_version = strtoul(optarg, NULL, 16);
             break;
         default:
             usage();
@@ -376,7 +385,7 @@ int main(int argc, char **argv)
             nca_create_romfs_type(&settings, nca_romfs_get_type(settings.nca_type));
             break;
         case NCA_TYPE_META:
-            if (settings.title_type != TITLE_TYPE_APPLICATION && settings.title_type != TITLE_TYPE_ADDON)
+            if (settings.title_type == 0)
             {
                 fprintf(stderr, "Error: Invalid titletype\n");
                 usage();
@@ -384,6 +393,10 @@ int main(int argc, char **argv)
             else if ((settings.programnca.valid == VALIDITY_INVALID || settings.controlnca.valid == VALIDITY_INVALID) && settings.title_type == TITLE_TYPE_APPLICATION)
                 usage();
             else if (settings.title_type == TITLE_TYPE_ADDON && settings.publicdatanca.valid == VALIDITY_INVALID)
+                usage();
+            else if (settings.title_type == TITLE_TYPE_SYSTEMPROGRAM && settings.programnca.valid == VALIDITY_INVALID)
+                usage();
+            else if (settings.title_type == TITLE_TYPE_SYSTEMDATA && settings.datanca.valid == VALIDITY_INVALID)
                 usage();
             else
                 nca_create_meta(&settings);

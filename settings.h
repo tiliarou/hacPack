@@ -58,6 +58,8 @@ enum hp_file_type
 
 enum hp_title_type
 {
+    TITLE_TYPE_SYSTEMPROGRAM = 0x1,
+    TITLE_TYPE_SYSTEMDATA = 0x2,
     TITLE_TYPE_APPLICATION = 0x80,
     TITLE_TYPE_PATCH = 0x81,
     TITLE_TYPE_ADDON = 0x82
@@ -84,6 +86,7 @@ typedef struct
     uint8_t nologo;
     uint8_t plaintext;
     uint8_t digest[0x20];
+    uint32_t title_version;
     unsigned char *keyareakey;
     int keygeneration;
     union {

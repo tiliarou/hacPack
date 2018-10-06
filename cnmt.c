@@ -36,19 +36,20 @@ void cnmt_create_application(filepath_t *cnmt_filepath, hp_settings_t *settings)
     if (settings->htmldocnca.valid == VALIDITY_VALID)
     {
         cnmt_set_content_record(&settings->htmldocnca, &cnmt_ctx.content_records[cnmt_ctx.content_records_count]);
-        cnmt_ctx.content_records[cnmt_ctx.content_records_count].type = 0x4; // Offline-Manual html
+        cnmt_ctx.content_records[cnmt_ctx.content_records_count].type = 0x4; // HtmlDocument
         cnmt_ctx.content_records_count += 1;
     }
     if (settings->legalnca.valid == VALIDITY_VALID)
     {
         cnmt_set_content_record(&settings->legalnca, &cnmt_ctx.content_records[cnmt_ctx.content_records_count]);
-        cnmt_ctx.content_records[cnmt_ctx.content_records_count].type = 0x5; // Legal html
+        cnmt_ctx.content_records[cnmt_ctx.content_records_count].type = 0x5; // LegalInformation
         cnmt_ctx.content_records_count += 1;
     }
 
     // Common values
     cnmt_ctx.header.type = 0x80;
     cnmt_ctx.header.title_id = settings->title_id;
+    cnmt_ctx.header.title_version = settings->title_version;
     cnmt_ctx.header.extended_header_size = 0x10;
     cnmt_ctx.header.content_entry_count = cnmt_ctx.content_records_count;
     cnmt_ext_header.patch_title_id = cnmt_ctx.header.title_id + 0x800;
@@ -95,6 +96,7 @@ void cnmt_create_addon(filepath_t *cnmt_filepath, hp_settings_t *settings)
     // Common values
     cnmt_ctx.header.type = 0x82;
     cnmt_ctx.header.title_id = settings->title_id;
+    cnmt_ctx.header.title_version = settings->title_version;
     cnmt_ctx.header.extended_header_size = 0x10;
     cnmt_ctx.header.content_entry_count = cnmt_ctx.content_records_count;
     cnmt_ext_header.application_title_id = (cnmt_ctx.header.title_id - 0x1000) & 0xFFFFFFFFFFFFF000;
@@ -107,6 +109,90 @@ void cnmt_create_addon(filepath_t *cnmt_filepath, hp_settings_t *settings)
     {
         fwrite(&cnmt_ctx.header, 1, sizeof(cnmt_header_t), cnmt_file);
         fwrite(&cnmt_ext_header, 1, sizeof(cnmt_extended_addon_header_t), cnmt_file);
+    }
+    else
+    {
+        fprintf(stderr, "Failed to create %s!\n", cnmt_filepath->char_path);
+        exit(EXIT_FAILURE);
+    }
+
+    // Write content records
+    printf("Writing content records\n");
+    for (int i=0; i < cnmt_ctx.content_records_count; i++)
+        fwrite(&cnmt_ctx.content_records[i], sizeof(cnmt_content_record_t), 1, cnmt_file);
+    fwrite(settings->digest, 1, 0x20, cnmt_file);
+
+    fclose(cnmt_file);
+}
+
+void cnmt_create_systemprogram(filepath_t *cnmt_filepath, hp_settings_t *settings)
+{
+    cnmt_ctx_t cnmt_ctx;
+    memset(&cnmt_ctx, 0, sizeof(cnmt_ctx));
+
+    printf("Setting content records\n");
+    if (settings->programnca.valid == VALIDITY_VALID)
+    {
+        cnmt_set_content_record(&settings->programnca, &cnmt_ctx.content_records[cnmt_ctx.content_records_count]);
+        cnmt_ctx.content_records[cnmt_ctx.content_records_count].type = 0x1; // Program
+        cnmt_ctx.content_records_count += 1;
+    }
+
+    // Common values
+    cnmt_ctx.header.type = 0x1;
+    cnmt_ctx.header.title_id = settings->title_id;
+    cnmt_ctx.header.title_version = settings->title_version;
+    cnmt_ctx.header.content_entry_count = cnmt_ctx.content_records_count;
+
+    printf("Writing metadata header\n");
+    FILE *cnmt_file;
+    cnmt_file = os_fopen(cnmt_filepath->os_path, OS_MODE_WRITE);
+
+    if (cnmt_file != NULL)
+    {
+        fwrite(&cnmt_ctx.header, 1, sizeof(cnmt_header_t), cnmt_file);
+    }
+    else
+    {
+        fprintf(stderr, "Failed to create %s!\n", cnmt_filepath->char_path);
+        exit(EXIT_FAILURE);
+    }
+
+    // Write content records
+    printf("Writing content records\n");
+    for (int i=0; i < cnmt_ctx.content_records_count; i++)
+        fwrite(&cnmt_ctx.content_records[i], sizeof(cnmt_content_record_t), 1, cnmt_file);
+    fwrite(settings->digest, 1, 0x20, cnmt_file);
+
+    fclose(cnmt_file);
+}
+
+void cnmt_create_systemdata(filepath_t *cnmt_filepath, hp_settings_t *settings)
+{
+    cnmt_ctx_t cnmt_ctx;
+    memset(&cnmt_ctx, 0, sizeof(cnmt_ctx));
+
+    printf("Setting content records\n");
+    if (settings->datanca.valid == VALIDITY_VALID)
+    {
+        cnmt_set_content_record(&settings->datanca, &cnmt_ctx.content_records[cnmt_ctx.content_records_count]);
+        cnmt_ctx.content_records[cnmt_ctx.content_records_count].type = 0x2; // Data
+        cnmt_ctx.content_records_count += 1;
+    }
+
+    // Common values
+    cnmt_ctx.header.type = 0x2;
+    cnmt_ctx.header.title_id = settings->title_id;
+    cnmt_ctx.header.title_version = settings->title_version;
+    cnmt_ctx.header.content_entry_count = cnmt_ctx.content_records_count;
+
+    printf("Writing metadata header\n");
+    FILE *cnmt_file;
+    cnmt_file = os_fopen(cnmt_filepath->os_path, OS_MODE_WRITE);
+
+    if (cnmt_file != NULL)
+    {
+        fwrite(&cnmt_ctx.header, 1, sizeof(cnmt_header_t), cnmt_file);
     }
     else
     {

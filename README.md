@@ -53,7 +53,8 @@ Data NCA options:
 PublicData NCA options:  
 --romfsdir               Set publicdata romfs directory path  
 Metadata NCA options:  
---titletype              Set cnmt title type [application, addon]  
+--titletype              Set cnmt title type [application, addon, systemprogram, systemdata]  
+--titleversion           Set title-version in hex with 4 bytes length, default value is 0x0  
 --programnca             Set program nca path  
 --controlnca             Set control nca path  
 --legalnca               Set legal information nca path  

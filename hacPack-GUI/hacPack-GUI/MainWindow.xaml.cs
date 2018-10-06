@@ -275,6 +275,50 @@ namespace hacPack_GUI
             btn_browse_public_data.IsEnabled = true;
         }
 
+        private void cmb_title_type_systemprogram_Selected(object sender, RoutedEventArgs e)
+        {
+            txt_program_nca.IsEnabled = true;
+            txt_program_nca.Text = string.Empty;
+            btn_browse_program_nca.IsEnabled = true;
+            txt_control_nca.IsEnabled = false;
+            txt_control_nca.Text = string.Empty;
+            btn_browse_control_nca.IsEnabled = false;
+            txt_legalinfo_nca.IsEnabled = false;
+            txt_legalinfo_nca.Text = string.Empty;
+            btn_browse_legalinfo_nca.IsEnabled = false;
+            txt_htmldocument_nca.IsEnabled = false;
+            txt_htmldocument_nca.Text = string.Empty;
+            btn_browse_htmldocument_nca.IsEnabled = false;
+            txt_data_nca.IsEnabled = false;
+            txt_data_nca.Text = string.Empty;
+            btn_browse_data_nca.IsEnabled = false;
+            txt_publicdata_nca.IsEnabled = false;
+            txt_publicdata_nca.Text = string.Empty;
+            btn_browse_public_data.IsEnabled = false;
+        }
+
+        private void cmb_title_type_system_data_Selected(object sender, RoutedEventArgs e)
+        {
+            txt_program_nca.IsEnabled = false;
+            txt_program_nca.Text = string.Empty;
+            btn_browse_program_nca.IsEnabled = false;
+            txt_control_nca.IsEnabled = false;
+            txt_control_nca.Text = string.Empty;
+            btn_browse_control_nca.IsEnabled = false;
+            txt_legalinfo_nca.IsEnabled = false;
+            txt_legalinfo_nca.Text = string.Empty;
+            btn_browse_legalinfo_nca.IsEnabled = false;
+            txt_htmldocument_nca.IsEnabled = false;
+            txt_htmldocument_nca.Text = string.Empty;
+            btn_browse_htmldocument_nca.IsEnabled = false;
+            txt_data_nca.IsEnabled = true;
+            txt_data_nca.Text = string.Empty;
+            btn_browse_data_nca.IsEnabled = true;
+            txt_publicdata_nca.IsEnabled = false;
+            txt_publicdata_nca.Text = string.Empty;
+            btn_browse_public_data.IsEnabled = false;
+        }
+
         private void btn_browse_program_nca_Click(object sender, RoutedEventArgs e)
         {
             browse_file(ref txt_program_nca);
@@ -411,6 +455,24 @@ namespace hacPack_GUI
                         }
                         else
                             System.Windows.MessageBox.Show("PublicData NCA path is empty", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                        break;
+                    case "SystemProgram":
+                        if (txt_program_nca.Text != string.Empty)
+                        {
+                            args = "--type nca --ncatype meta --titletype systemprogram --programnca \"" + txt_program_nca.Text + "\"";
+                            launch_hacpack(args);
+                        }
+                        else
+                            System.Windows.MessageBox.Show("Program NCA path is empty", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                        break;
+                    case "SystemData":
+                        if (txt_data_nca.Text != string.Empty)
+                        {
+                            args = "--type nca --ncatype meta --titletype systemdata --datanca \"" + txt_data_nca.Text + "\"";
+                            launch_hacpack(args);
+                        }
+                        else
+                            System.Windows.MessageBox.Show("Data NCA path is empty", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
                         break;
                 }
             }

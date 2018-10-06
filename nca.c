@@ -452,6 +452,16 @@ void nca_create_meta(hp_settings_t *settings)
         filepath_append(&cnmt_path, "AddOnContent_%016" PRIx64 ".cnmt", settings->title_id);
         cnmt_create_addon(&cnmt_path, settings);
     }
+    else if (settings->title_type == TITLE_TYPE_SYSTEMPROGRAM)
+    {
+        filepath_append(&cnmt_path, "SystemProgram_%016" PRIx64 ".cnmt", settings->title_id);
+        cnmt_create_systemprogram(&cnmt_path, settings);
+    }
+    else if (settings->title_type == TITLE_TYPE_SYSTEMDATA)
+    {
+        filepath_append(&cnmt_path, "SystemData_%016" PRIx64 ".cnmt", settings->title_id);
+        cnmt_create_systemdata(&cnmt_path, settings);
+    }
 
     //Build PFS0
     filepath_t meta_pfs0;
