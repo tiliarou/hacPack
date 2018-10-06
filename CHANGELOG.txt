@@ -1,3 +1,7 @@
+v1.10
+Added support for creating SystemProgram and SystemData Metadata NCA
+Added titleversion option for creating Metadata NCA
+
 v1.02
 GUI:
 Fixed a bug cause failure of building meta ncas with legal information nca and without data nca
