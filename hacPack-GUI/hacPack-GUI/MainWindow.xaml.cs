@@ -495,15 +495,17 @@ namespace hacPack_GUI
             } else
             {
                 txt_log.Text = string.Empty;
-                if (txt_ncadir.Text != string.Empty)
+                if (txt_ncadir.Text == string.Empty)
+                    System.Windows.MessageBox.Show("NCA directory path is empty", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                else if (txt_ncadir.Text == txt_outdir.Text)
+                {
+                    System.Windows.MessageBox.Show("Output directory and NCA directory are the same", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                }
+                else
                 {
                     string args;
                     args = "--type nsp --ncadir \"" + txt_ncadir.Text + "\"";
                     launch_hacpack(args);
-                }
-                else
-                {
-                    System.Windows.MessageBox.Show("NCA directory path is empty", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
                 }
             }
             
