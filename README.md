@@ -22,7 +22,7 @@ key_area_key_application_xx | Application key area encryption keys
 
 ### CLI Options  
 
-```bash
+```
 *nix: ./hacpack [options...]  
 Windows: .\hacpack.exe [options...]  
   

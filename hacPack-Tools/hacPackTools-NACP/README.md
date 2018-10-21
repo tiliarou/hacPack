@@ -9,7 +9,7 @@ With this tool, You can see the contents of NACPs, create NACPs from nacp.xml fi
 
 ### CLI Options  
 
-```bash
+```
 *nix: ./hptnacp [options...]  
 Windows: .\hptnacp.exe [options...]  
   
