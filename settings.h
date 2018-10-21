@@ -82,6 +82,7 @@ typedef struct
     filepath_t datanca;
     filepath_t publicdatanca;
     filepath_t ncadir;
+    filepath_t cnmt;
     uint8_t noromfs;
     uint8_t nologo;
     uint8_t plaintext;

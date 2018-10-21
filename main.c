@@ -81,6 +81,7 @@ int main(int argc, char **argv)
     filepath_init(&settings.publicdatanca);
     filepath_init(&settings.metanca);
     filepath_init(&settings.ncadir);
+    filepath_init(&settings.cnmt);
 
     // Hardcode default temp directory
     filepath_init(&settings.temp_dir);
@@ -132,6 +133,7 @@ int main(int argc, char **argv)
                 {"ncadir", 1, NULL, 22},
                 {"digest", 1, NULL, 23},
                 {"titleversion", 1, NULL, 24},
+                {"cnmt", 1, NULL, 25},
                 {NULL, 0, NULL, 0},
             };
 
@@ -272,6 +274,9 @@ int main(int argc, char **argv)
         case 24:
             settings.title_version = strtoul(optarg, NULL, 16);
             break;
+        case 25:
+            filepath_set(&settings.cnmt, optarg);
+            break;
         default:
             usage();
         }
@@ -333,7 +338,7 @@ int main(int argc, char **argv)
         fprintf(stderr, "Error: Bad TitleID: %016" PRIx64 "\n"
                         "Valid TitleID range: 0100000000000000 - 01ffffffffffffff\n",
                 settings.title_id);
-                usage();
+        usage();
     }
 
     // Make sure that outout directory is set
@@ -390,6 +395,8 @@ int main(int argc, char **argv)
                 fprintf(stderr, "Error: Invalid titletype\n");
                 usage();
             }
+            else if (settings.cnmt.valid == VALIDITY_VALID)
+                nca_create_meta(&settings);
             else if ((settings.programnca.valid == VALIDITY_INVALID || settings.controlnca.valid == VALIDITY_INVALID) && settings.title_type == TITLE_TYPE_APPLICATION)
                 usage();
             else if (settings.title_type == TITLE_TYPE_ADDON && settings.publicdatanca.valid == VALIDITY_INVALID)

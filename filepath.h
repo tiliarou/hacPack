@@ -75,5 +75,6 @@ void filepath_os_append(filepath_t *fpath, oschar_t *path);
 void filepath_set(filepath_t *fpath, const char *path);
 oschar_t *filepath_get(filepath_t *fpath);
 int filepath_remove_directory(filepath_t *dir_path);
+void filepath_copy_file(filepath_t *source_file, filepath_t *destination_path);
 
 #endif

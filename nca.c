@@ -318,8 +318,8 @@ void nca_create_program(hp_settings_t *settings)
         printf("Calculating hash table\n");
         pfs0_create_hashtable(&program_logo, &program_logo_hash_table, &nca_header.fs_headers[2].pfs0_superblock.hash_table_size, &nca_header.fs_headers[2].pfs0_superblock.pfs0_offset);
 
-        // Write IVFC levels
-        printf("\n===> Writing IVFC levels\n");
+        // Write PFS0
+        printf("\n===> Writing Logo\n");
         printf("Writing PFS0 hash table\n");
         nca_write_file(program_nca_file, &program_logo_hash_table);
         printf("Writing PFS0\n");
@@ -338,7 +338,7 @@ void nca_create_program(hp_settings_t *settings)
 
         nca_header.fs_headers[2].hash_type = HASH_TYPE_PFS0;
         nca_header.fs_headers[2].fs_type = FS_TYPE_PFS0;
-        nca_header.fs_headers[2].version = 0x2;       // Always 2
+        nca_header.fs_headers[2].version = 0x2;    // Always 2
         nca_header.fs_headers[2].crypt_type = 0x1; // Plain text
         nca_header.fs_headers[2].pfs0_superblock.always_2 = 0x2;
         nca_header.fs_headers[2].pfs0_superblock.block_size = PFS0_HASH_BLOCK_SIZE;
@@ -445,22 +445,46 @@ void nca_create_meta(hp_settings_t *settings)
     if (settings->title_type == TITLE_TYPE_APPLICATION)
     {
         filepath_append(&cnmt_path, "Application_%016" PRIx64 ".cnmt", settings->title_id);
-        cnmt_create_application(&cnmt_path, settings);
+        if (settings->cnmt.valid == VALIDITY_VALID)
+        {
+            printf("Copying %s to %s\n", settings->cnmt.char_path, cnmt_path.char_path);
+            filepath_copy_file(&settings->cnmt, &cnmt_path);
+        }
+        else
+            cnmt_create_application(&cnmt_path, settings);
     }
     else if (settings->title_type == TITLE_TYPE_ADDON)
     {
         filepath_append(&cnmt_path, "AddOnContent_%016" PRIx64 ".cnmt", settings->title_id);
-        cnmt_create_addon(&cnmt_path, settings);
+        if (settings->cnmt.valid == VALIDITY_VALID)
+        {
+            printf("Copying %s to %s\n", settings->cnmt.char_path, cnmt_path.char_path);
+            filepath_copy_file(&settings->cnmt, &cnmt_path);
+        }
+        else
+            cnmt_create_addon(&cnmt_path, settings);
     }
     else if (settings->title_type == TITLE_TYPE_SYSTEMPROGRAM)
     {
         filepath_append(&cnmt_path, "SystemProgram_%016" PRIx64 ".cnmt", settings->title_id);
-        cnmt_create_systemprogram(&cnmt_path, settings);
+        if (settings->cnmt.valid == VALIDITY_VALID)
+        {
+            printf("Copying %s to %s\n", settings->cnmt.char_path, cnmt_path.char_path);
+            filepath_copy_file(&settings->cnmt, &cnmt_path);
+        }
+        else
+            cnmt_create_systemprogram(&cnmt_path, settings);
     }
     else if (settings->title_type == TITLE_TYPE_SYSTEMDATA)
     {
         filepath_append(&cnmt_path, "SystemData_%016" PRIx64 ".cnmt", settings->title_id);
-        cnmt_create_systemdata(&cnmt_path, settings);
+        if (settings->cnmt.valid == VALIDITY_VALID)
+        {
+            printf("Copying %s to %s\n", settings->cnmt.char_path, cnmt_path.char_path);
+            filepath_copy_file(&settings->cnmt, &cnmt_path);
+        }
+        else
+            cnmt_create_systemdata(&cnmt_path, settings);
     }
 
     //Build PFS0
