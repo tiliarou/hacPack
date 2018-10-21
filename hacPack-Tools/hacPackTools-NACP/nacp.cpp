@@ -784,7 +784,7 @@ void nacp_tool::createnacp(const string *input_filepath, const string *output_fi
             if (eElement->GetText() != NULL)
             {
                 nacp.SeedForPseudoDeviceId = strtoull(eElement->GetText(), NULL, 16);
-                if (nacp.SeedForPseudoDeviceId < 0x0100000000000000 || nacp.SeedForPseudoDeviceId > 0x01ffffffffffffff || errno == ERANGE)
+                if (errno == ERANGE)
                 {
                     cerr << "Value of <SeedForPseudoDeviceId> element is invalid\n";
                     exit(EXIT_FAILURE);
