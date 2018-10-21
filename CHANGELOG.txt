@@ -1,3 +1,7 @@
+v1.20
+Added option for creating Metadata nca from cnmt
+Added hacPackTools-NACP v1.00
+
 v1.12
 Fixed a bug cause making bad PFS0 for files larger than 4GB in 32-bit platforms
 
