@@ -84,9 +84,13 @@ Windows: hacpack.exe -o .\out\ --type nca --ncatype publicdata --titleid 0104444
 ### Metadata NCA: --ncatype meta
 Metadata NCA contains 1 section  
 There's a file called cnmt in metadata nca which contains information about other ncas  
-You must specify --titletype option for creating metadata nca. Title type  "application" is for apps and games, "addon" is for dlcs  
-"application contains" program and control ncas, it may also contain manual(legal information, offline-manual html) and data ncas.  
+You can build metadata nca from ncas or you can make it directly from cnmt  
+You must specify --titletype option for creating metadata nca.  
+Title type  "application" is for apps and games, "addon" is for dlcs, "systemprogram" is for firmware programs, "systemdata" is for firmware datas.  
+"application" contains program and control ncas, it may also contain manual(legal information, offline-manual html) and data ncas.  
 "addon" only contains publicdata nca  
+"systemprogram" only contains program nca  
+"systemdata" only contains data nca  
 ```
 *nix: hacpack -o ./out/ --type nca --ncatype meta --titleid 0104444444444000 --programnca ./nca/00000000000000000000000000000001.nca
   --controlnca ./nca/00000000000000000000000000000002.nca --legalnca ./nca/00000000000000000000000000000003.nca
@@ -94,6 +98,10 @@ You must specify --titletype option for creating metadata nca. Title type  "appl
 Windows: hacpack.exe -o .\out\ --type nca --ncatype meta --titleid 0104444444444000 --programnca .\nca\00000000000000000000000000000001.nca
   --controlnca .\nca\00000000000000000000000000000002.nca --legalnca .\nca\00000000000000000000000000000003.nca
   --htmldocnca .\nca\00000000000000000000000000000004.nca --datanca .\nca\00000000000000000000000000000005.nca  
+```
+```
+*nix: hacpack -o ./out/ --type nca --ncatype meta --titleid 0104444444444000 --cnmt ./cnmt/Application_0104444444444000.cnmt  
+Windows: hacpack.exe -o .\out\ --type nca --ncatype meta --titleid 0104444444444000 --cnmt .\cnmt\Application_0104444444444000.cnmt  
 ```
 
 ## Creating NSP

@@ -60,6 +60,7 @@ Metadata NCA options:
 --legalnca               Set legal information nca path  
 --htmldocnca             Set offline manual nca path  
 --datanca                Set data nca path  
+--cnmt                   Set cnmt path  
 --digest                 Set cnmt digest  
 NSP options:  
 --ncadir                 Set input nca directory path  

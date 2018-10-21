@@ -55,6 +55,7 @@ static void usage(void)
             "--legalnca               Set legal information nca path\n"
             "--htmldocnca             Set offline manual nca path\n"
             "--datanca                Set data nca path\n"
+            "--cnmt                   Set cnmt path\n"
             "--digest                 Set cnmt digest\n"
             "NSP options:\n"
             "--ncadir                 Set input nca directory path\n",
