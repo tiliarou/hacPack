@@ -75,8 +75,8 @@ Currently, all options are not implemented in GUI and it's recommended to use CL
 
 ### Tools
 
-hacPack comes with some useful tools aiming for modifying and parsing the files in ncas. make sure to check hacPackTools folder  
-
+hacPackTools are tools aiming for modifying and parsing the files in ncas. make sure to check hacPackTools folder  
+  
 Also Check docs for more info  
 
 ## Licensing
