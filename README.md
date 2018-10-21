@@ -10,6 +10,7 @@ Thanks: SciresM, yellows8, Adubbz, SwitchBrew
 ## Usage
 
 ### Keys
+
 You should place your keyset file with "keys.dat" filename in the same folder as hacPack  
 Alternatively, You can use -k or --keyset option to load your keyset file  
 Required keys are:  
@@ -19,8 +20,9 @@ Key Name | Description
 header_key | NCA Header Key
 key_area_key_application_xx | Application key area encryption keys
 
-### CLI Options:  
-```
+### CLI Options  
+
+```bash
 *nix: ./hacpack [options...]  
 Windows: .\hacpack.exe [options...]  
   
@@ -65,11 +67,17 @@ Metadata NCA options:
 NSP options:  
 --ncadir                 Set input nca directory path  
 ```
-### GUI:
+
+### GUI
+
 hacPack GUI is just an interface for CLI. It's just available for Microsoft Windows and it requires .NetFramework 4.5 or higher  
 Currently, all options are not implemented in GUI and it's recommended to use CLI  
 
-Check docs for more info  
+### Tools
+
+hacPack comes with some useful tools aiming for modifying and parsing the files in ncas. make sure to check hacPackTools folder  
+
+Also Check docs for more info  
 
 ## Licensing
 

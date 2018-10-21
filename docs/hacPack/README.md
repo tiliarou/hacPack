@@ -55,33 +55,45 @@ Windows: hacpack.exe -o .\out\ --type nca --ncatype program --titleid 0104444444
 ```
 
 ### Control NCA: --ncatype control
+
 Control NCA contains 1 section  
 Section 0 (known as romfs) contains control.nacp and icons with icon_{lang}.dat  
-```
+
+```bash
 *nix: hacpack -o ./out/ --type nca --ncatype control --titleid 0104444444444000 --romfsdir ./control/
 Windows: hacpack.exe -o .\out\ --type nca --ncatype control --titleid 0104444444444000 --romfsdir .\control\
 ```
+
 ### Manual NCA: --ncatype manual
+
 Manual NCA contains 1 section  
 It contains "Legal Information" or "Offline-Manual" html documents  
-```
+
+```bash
 *nix: hacpack -o ./out/ --type nca --ncatype manual --titleid 0104444444444000 --romfsdir ./manual/
 Windows: hacpack.exe -o .\out\ --type nca --ncatype manual --titleid 0104444444444000 --romfsdir .\manual\
 ```
+
 ### Data NCA: --ncatype data
+
 Data NCA contains 1 section  
-```
+
+```bash
 *nix: hacpack -o ./out/ --type nca --ncatype data --titleid 0104444444444000 --romfsdir ./data/
 Windows: hacpack.exe -o .\out\ --type nca --ncatype data --titleid 0104444444444000 --romfsdir .\data\
 ```
+
 ### PublicData NCA: --ncatype publicdata
+
 PublicData NCA contains 1 section  
-```
+
+```bash
 *nix: hacpack -o ./out/ --type nca --ncatype publicdata --titleid 0104444444444001 --romfsdir ./publicdata/
 Windows: hacpack.exe -o .\out\ --type nca --ncatype publicdata --titleid 0104444444444001 --romfsdir .\publicdata\
 ```
 
 ### Metadata NCA: --ncatype meta
+
 Metadata NCA contains 1 section  
 There's a file called cnmt in metadata nca which contains information about other ncas  
 You can build metadata nca from ncas or you can make it directly from cnmt  
@@ -91,7 +103,8 @@ Title type  "application" is for apps and games, "addon" is for dlcs, "systempro
 "addon" only contains publicdata nca  
 "systemprogram" only contains program nca  
 "systemdata" only contains data nca  
-```
+
+```bash
 *nix: hacpack -o ./out/ --type nca --ncatype meta --titleid 0104444444444000 --programnca ./nca/00000000000000000000000000000001.nca
   --controlnca ./nca/00000000000000000000000000000002.nca --legalnca ./nca/00000000000000000000000000000003.nca
   --htmldocnca ./nca/00000000000000000000000000000004.nca --datanca ./nca/00000000000000000000000000000005.nca  
@@ -99,16 +112,20 @@ Windows: hacpack.exe -o .\out\ --type nca --ncatype meta --titleid 0104444444444
   --controlnca .\nca\00000000000000000000000000000002.nca --legalnca .\nca\00000000000000000000000000000003.nca
   --htmldocnca .\nca\00000000000000000000000000000004.nca --datanca .\nca\00000000000000000000000000000005.nca  
 ```
-```
+
+```bash
 *nix: hacpack -o ./out/ --type nca --ncatype meta --titleid 0104444444444000 --cnmt ./cnmt/Application_0104444444444000.cnmt  
 Windows: hacpack.exe -o .\out\ --type nca --ncatype meta --titleid 0104444444444000 --cnmt .\cnmt\Application_0104444444444000.cnmt  
 ```
 
 ## Creating NSP
+
 ### NSP: --type nsp
+
 NSP is a container for ncas  
-You must set your ncas folder with --ncadir option
-```
+You must set your ncas folder with --ncadir option  
+
+```bash
 *nix: hacpack -o ./nsp/ --type nsp --ncadir ./ncas/ --titleid 0104444444444000
 Windows: hacpack.exe -o .\nsp\ --type nsp --ncadir .\ncas\ --titleid 0104444444444000
 ```

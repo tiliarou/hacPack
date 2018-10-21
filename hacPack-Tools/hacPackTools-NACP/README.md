@@ -7,8 +7,9 @@ With this tool, You can see the contents of NACPs, create NACPs from nacp.xml fi
 
 ## Usage
 
-### CLI Options:  
-```
+### CLI Options  
+
+```bash
 *nix: ./hptnacp [options...]  
 Windows: .\hptnacp.exe [options...]  
   
@@ -17,7 +18,8 @@ Options:
 -i, --input              Input file  
 -o, --output             Output file  
 -h, --help               Display usage
-``` 
+```
+
 Check docs for more info
 
 ## Licensing
