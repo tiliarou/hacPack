@@ -1,5 +1,9 @@
 v1.20
+hacPack:
 Added option for creating Metadata nca from cnmt
+hacPack-GUI:
+Added option for creating Metadata nca from cnmt in gui
+hacPack-Tools:
 Added hacPackTools-NACP v1.00
 
 v1.12
