@@ -296,7 +296,7 @@ Usually None
 
 Integer, Usually 0
 
-### \<StartupUserAccount>
+### \<UserAccountSwitchLock>
 
 | Value   |
 |---------|
