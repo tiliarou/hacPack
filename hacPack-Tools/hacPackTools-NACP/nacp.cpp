@@ -116,6 +116,8 @@ void nacp_tool::print(const string *input_filepath)
     cout << "Logo Type: " << nacp_tool::get_logo_type(nacp.LogoType) << "\n";
     cout << "Logo Handling: " << nacp_tool::get_logo_handling(nacp.LogoHandling) << "\n";
     cout << "Startup User Account: " << nacp_tool::get_startup_user_account(nacp.StartupUserAccount) << "\n";
+    cout << "UserAccount Switch Lock: " << nacp_tool::get_useraccount_switch_lock(nacp.UserAccountSwitchLock) << "\n";
+    cout << "Required Network Service License On Launch: " << nacp_tool::get_required_network_service_license_on_launch(nacp.RequiredNetworkServiceLicenseOnLaunchFlag) << "\n";
     cout << "Screenshot: " << nacp_tool::get_screenshot(nacp.Screenshot) << "\n";
     cout << "Videocapture: " << nacp_tool::get_videocapture(nacp.VideoCapture) << "\n";
     cout << "HDCP: " << nacp_tool::get_hdcp(nacp.Hdcp) << "\n";
@@ -187,6 +189,9 @@ void nacp_tool::createxml(const string *input_filepath, const string *output_fil
     XMLElement *xml_eStartupUserAccount = nacp_xml.NewElement("StartupUserAccount");
     xml_eStartupUserAccount->SetText(nacp_tool::get_startup_user_account(nacp.StartupUserAccount));
     xml_nApplication->InsertEndChild(xml_eStartupUserAccount);
+    XMLElement *xml_eUserAccountSwitchLock = nacp_xml.NewElement("UserAccountSwitchLock");
+    xml_eUserAccountSwitchLock->SetText(nacp_tool::get_useraccount_switch_lock(nacp.UserAccountSwitchLock));
+    xml_nApplication->InsertEndChild(xml_eUserAccountSwitchLock);
     XMLElement *xml_eParentalControl = nacp_xml.NewElement("ParentalControl");
     xml_eParentalControl->SetText(nacp_tool::get_parental_control_flag(nacp.ParentalControlFlag));
     xml_nApplication->InsertEndChild(xml_eParentalControl);
@@ -353,6 +358,9 @@ void nacp_tool::createxml(const string *input_filepath, const string *output_fil
     XMLElement *xml_eProgramIndex = nacp_xml.NewElement("ProgramIndex");
     xml_eProgramIndex->SetText(nacp.ProgramIndex);
     xml_nApplication->InsertEndChild(xml_eProgramIndex);
+    XMLElement *xml_eRequiredNetworkServiceLicenseOnLaunch = nacp_xml.NewElement("RequiredNetworkServiceLicenseOnLaunch");
+    xml_eRequiredNetworkServiceLicenseOnLaunch->SetText(nacp_tool::get_required_network_service_license_on_launch(nacp.RequiredNetworkServiceLicenseOnLaunchFlag));
+    xml_nApplication->InsertEndChild(xml_eRequiredNetworkServiceLicenseOnLaunch);
 
     // Save XML
     cout << "Saving " << *output_filepath << "\n";
@@ -469,6 +477,16 @@ void nacp_tool::createnacp(const string *input_filepath, const string *output_fi
             else
             {
                 cerr << "Value of <StartupUserAccount> element is empty\n";
+                exit(EXIT_FAILURE);
+            }
+        }
+        else if (strElement == "UserAccountSwitchLock")
+        {
+            if (eElement->GetText() != NULL)
+                nacp.UserAccountSwitchLock = nacp_tool::set_useraccount_switch_lock(eElement->GetText());
+            else
+            {
+                cerr << "Value of <UserAccountSwitchLock> element is empty\n";
                 exit(EXIT_FAILURE);
             }
         }
@@ -1071,6 +1089,16 @@ void nacp_tool::createnacp(const string *input_filepath, const string *output_fi
                 exit(EXIT_FAILURE);
             }
         }
+        else if (strElement == "RequiredNetworkServiceLicenseOnLaunch")
+        {
+            if (eElement->GetText() != NULL)
+                nacp.RequiredNetworkServiceLicenseOnLaunchFlag = nacp_tool::set_required_network_service_license_on_launch(eElement->GetText());
+            else
+            {
+                cerr << "Value of <RequiredNetworkServiceLicenseOnLaunch> element is empty\n";
+                exit(EXIT_FAILURE);
+            }
+        }
 
         eElement = eElement->NextSiblingElement();
     }
@@ -1544,6 +1572,52 @@ uint8_t nacp_tool::set_addoncontent_registration_type(const char *value)
     else
     {
         cerr << "Value of <AddOnContentRegistrationType> element is invalid\n";
+        exit(EXIT_FAILURE);
+    }
+}
+
+const char *nacp_tool::get_useraccount_switch_lock(uint8_t value)
+{
+    map<uint8_t, const char *> useraccount_switch_lock = {{0, "Disable"},
+                                                          {1, "Enable"}};
+    if (useraccount_switch_lock.count(value) == 1)
+        return useraccount_switch_lock[value];
+    else
+        return "Unknown";
+}
+
+uint8_t nacp_tool::set_useraccount_switch_lock(const char *value)
+{
+    map<const char *, uint8_t, CompareCStrings> useraccount_switch_lock = {{"Disable", 0},
+                                                                           {"Enable", 1}};
+    if (useraccount_switch_lock.count(value) == 1)
+        return useraccount_switch_lock[value];
+    else
+    {
+        cerr << "Value of <UserAccountSwitchLock> element is invalid\n";
+        exit(EXIT_FAILURE);
+    }
+}
+
+const char *nacp_tool::get_required_network_service_license_on_launch(uint8_t value)
+{
+    map<uint8_t, const char *> required_network_service_license_on_launch = {{0, "None"},
+                                                                             {1, "Common"}};
+    if (required_network_service_license_on_launch.count(value) == 1)
+        return required_network_service_license_on_launch[value];
+    else
+        return "Unknown";
+}
+
+uint8_t nacp_tool::set_required_network_service_license_on_launch(const char *value)
+{
+    map<const char *, uint8_t, CompareCStrings> required_network_service_license_on_launch = {{"None", 0},
+                                                                                              {"Common", 1}};
+    if (required_network_service_license_on_launch.count(value) == 1)
+        return required_network_service_license_on_launch[value];
+    else
+    {
+        cerr << "Value of <RequiredNetworkServiceLicenseOnLaunch> element is invalid\n";
         exit(EXIT_FAILURE);
     }
 }

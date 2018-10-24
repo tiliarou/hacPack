@@ -62,6 +62,7 @@
     </Title>
     <Isbn/>
     <StartupUserAccount>Required</StartupUserAccount>
+    <UserAccountSwitchLock>Disable</UserAccountSwitchLock>
     <ParentalControl>None</ParentalControl>
     <SupportedLanguage>AmericanEnglish</SupportedLanguage>
     <SupportedLanguage>BritishEnglish</SupportedLanguage>
@@ -147,4 +148,5 @@
     <Repair>None</Repair>
     <Attribute>None</Attribute>
     <ProgramIndex>0</ProgramIndex>
+    <RequiredNetworkServiceLicenseOnLaunch>None</RequiredNetworkServiceLicenseOnLaunch>
 </Application>

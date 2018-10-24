@@ -16,7 +16,7 @@ typedef struct {
     nacp_application_title_t Title[0x10];
     char Isbn[0x25];
     std::uint8_t StartupUserAccount;
-    std::uint8_t _0x3026;
+    std::uint8_t UserAccountSwitchLock;
     std::uint8_t AddOnContentRegistrationType;
     std::uint32_t AttributeFlag;
     std::uint32_t SupportedLanguageFlag;
@@ -60,7 +60,8 @@ typedef struct {
     std::uint8_t PlayLogQueryCapability;
     std::uint8_t RepairFlag;
     std::uint8_t ProgramIndex;
-    std::uint8_t Reserved[0xDED];
+    std::uint8_t RequiredNetworkServiceLicenseOnLaunchFlag;
+    std::uint8_t Reserved[0xDEC];
 } nacp_t;
 #pragma pack(pop)
 
@@ -89,6 +90,8 @@ class nacp_tool {
     const char* get_play_log_query_capability(uint8_t value);
     const char* get_repair_flag(uint8_t value);
     const char* get_addoncontent_registration_type(uint8_t value);
+    const char *get_useraccount_switch_lock(uint8_t value);
+    const char *get_required_network_service_license_on_launch(uint8_t value);
     // Create
     int get_title_lang_id(const char *lang_name);
     uint8_t set_startup_user_account(const char *value);
@@ -107,6 +110,8 @@ class nacp_tool {
     uint8_t set_play_log_query_capability(const char *value);
     uint8_t set_repair_flag(const char *value);
     uint32_t set_attribute_flag(const char *value);
+    uint8_t set_useraccount_switch_lock(const char *value);
+    uint8_t set_required_network_service_license_on_launch(const char *value);
 };
 
 #endif
