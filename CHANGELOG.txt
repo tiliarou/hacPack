@@ -1,3 +1,6 @@
+v1.20-r3:
+Fixed a bug cause compiled version of hacPackTools-NACP not running on windows machines
+
 v1.20-r2:
 hacPack-Tools:
 Added RequiredNetworkServiceLicenseOnLaunch and UserAccountSwitchLock options for hacPackTools-NACP
