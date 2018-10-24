@@ -1,3 +1,7 @@
+v1.20-r2:
+hacPack-Tools:
+Added RequiredNetworkServiceLicenseOnLaunch and UserAccountSwitchLock options for hacPackTools-NACP
+
 v1.20
 hacPack:
 Added option for creating Metadata nca from cnmt
