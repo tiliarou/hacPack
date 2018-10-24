@@ -283,7 +283,7 @@ Character, Max Size = 65, Usually empty
 | SuppressGameCardAccess |
 Usually none
 
-### \<Attribute>
+### \<Attribute\>
 
 | Value                    |
 |--------------------------|
@@ -292,5 +292,20 @@ Usually none
 | RetailInteractiveDisplay |
 Usually None
 
-### \<ProgramIndex>
+### \<ProgramIndex\>
+
 Integer, Usually 0
+
+### \<StartupUserAccount>
+
+| Value   |
+|---------|
+| Disable |
+| Enable  |
+
+### \<RequiredNetworkServiceLicenseOnLaunch\>
+
+| Value  |
+|--------|
+| None   |
+| Common |
