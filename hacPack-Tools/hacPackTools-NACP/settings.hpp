@@ -9,6 +9,6 @@
 #define OS_PATH_SEPARATOR "/"
 #endif
 
-#define HPTNACP_VERSION "v1.00"
+#define HPTNACP_VERSION "v1.01"
 
 #endif
