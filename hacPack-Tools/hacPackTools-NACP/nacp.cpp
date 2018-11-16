@@ -1099,6 +1099,8 @@ void nacp_tool::createnacp(const string *input_filepath, const string *output_fi
                 exit(EXIT_FAILURE);
             }
         }
+        else
+            cerr << "Skipping unknown element: " << strElement << "\n";
 
         eElement = eElement->NextSiblingElement();
     }
@@ -1294,7 +1296,7 @@ uint8_t nacp_tool::set_videocapture(const char *value)
         return videocapture[value];
     else
     {
-        cerr << "Value of <Screenshot> element is invalid\n";
+        cerr << "Value of <VideoCapture> element is invalid\n";
         exit(EXIT_FAILURE);
     }
 }
