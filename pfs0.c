@@ -206,13 +206,13 @@ void pfs0_create_hashtable(filepath_t *pfs0_path, filepath_t *pfs0_hashtable_pat
     src_file = os_fopen(pfs0_path->os_path, OS_MODE_READ);
     if (src_file == NULL)
     {
-        fprintf(stderr, "Unable to open: %s", pfs0_path->char_path);
+        fprintf(stderr, "Unable to open: %s\n", pfs0_path->char_path);
         exit(EXIT_FAILURE);
     }
     dst_file = os_fopen(pfs0_hashtable_path->os_path, OS_MODE_WRITE);
     if (dst_file == NULL)
     {
-        fprintf(stderr, "Unable to open: %s", pfs0_hashtable_path->char_path);
+        fprintf(stderr, "Unable to open: %s\n", pfs0_hashtable_path->char_path);
         exit(EXIT_FAILURE);
     }
 
@@ -276,7 +276,7 @@ void pfs0_calculate_master_hash(filepath_t *pfs0_hashtable_filepath, uint64_t ha
     pfs0_hashtable_file = os_fopen(pfs0_hashtable_filepath->os_path, OS_MODE_READ);
     if (pfs0_hashtable_file == NULL)
     {
-        fprintf(stderr, "Unable to open: %s", pfs0_hashtable_filepath->char_path);
+        fprintf(stderr, "Unable to open: %s\n", pfs0_hashtable_filepath->char_path);
         exit(EXIT_FAILURE);
     }
 

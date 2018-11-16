@@ -7,6 +7,7 @@
 #include "filepath.h"
 #include "romfs.h"
 #include "cnmt.h"
+#include "ticket.h"
 
 void nca_create_romfs_type(hp_settings_t *settings, char *nca_type)
 {
@@ -105,23 +106,42 @@ void nca_create_romfs_type(hp_settings_t *settings, char *nca_type)
 
     printf("\n---> Finalizing:\n");
 
-    // Set encrypted key area key 2
-    memcpy(nca_header.encrypted_keys[2], settings->keyareakey, 0x10);
+    if (settings->has_title_key == 0)
+        // Set encrypted key area key 2
+        memcpy(nca_header.encrypted_keys[2], settings->keyareakey, 0x10);
+    else
+    {
+        // Calculate RightsID
+        for (int ridc=0; ridc < 8; ridc++)
+        {
+            nca_header.rights_id[7-ridc] = (settings->title_id >> (8*ridc) & 0xff);
+        }
+        nca_header.rights_id[15] = (uint8_t)settings->keygeneration;
+    }
 
     printf("===> Encrypting NCA\n");
     if (settings->plaintext == 0)
     {
         // Encrypt section 0
         printf("Encrypting section 0\n");
-        nca_encrypt_section(romfs_nca_file, &nca_header, 0);
+        nca_encrypt_section(romfs_nca_file, &nca_header, 0, settings);
     }
 
     // Encrypt header
     printf("Getting NCA file size\n");
     fseeko64(romfs_nca_file, 0, SEEK_END);
     nca_header.nca_size = (uint64_t)ftello64(romfs_nca_file);
-    printf("Encrypting key area\n");
-    nca_encrypt_key_area(&nca_header, settings);
+    if (settings->has_title_key == 0)
+    {
+        printf("Encrypting key area\n");
+        nca_encrypt_key_area(&nca_header, settings);
+    }
+    else
+    {
+        // Create cert and tik
+        ticket_create_cert(settings);
+        ticket_create_tik(settings);
+    }
     printf("Encrypting header\n");
     nca_encrypt_header(&nca_header, settings);
 
@@ -353,19 +373,29 @@ void nca_create_program(hp_settings_t *settings)
 
     printf("\n---> Finalizing:\n");
 
-    // Set encrypted key area key 2
-    memcpy(nca_header.encrypted_keys[2], settings->keyareakey, 0x10);
+    if (settings->has_title_key == 0)
+        // Set encrypted key area key 2
+        memcpy(nca_header.encrypted_keys[2], settings->keyareakey, 0x10);
+    else
+    {
+        // Calculate RightsID
+        for (int ridc=0; ridc < 8; ridc++)
+        {
+            nca_header.rights_id[7-ridc] = (settings->title_id >> (8*ridc) & 0xff);
+        }
+        nca_header.rights_id[15] = (uint8_t)settings->keygeneration;
+    }
 
     printf("===> Encrypting NCA\n");
     // Encrypt sections
     if (settings->plaintext == 0)
     {
         printf("Encrypting section 0\n");
-        nca_encrypt_section(program_nca_file, &nca_header, 0);
+        nca_encrypt_section(program_nca_file, &nca_header, 0, settings);
         if (settings->noromfs == 0)
         {
             printf("Encrypting section 1\n");
-            nca_encrypt_section(program_nca_file, &nca_header, 1);
+            nca_encrypt_section(program_nca_file, &nca_header, 1, settings);
         }
     }
 
@@ -373,8 +403,17 @@ void nca_create_program(hp_settings_t *settings)
     printf("Getting NCA file size\n");
     fseeko64(program_nca_file, 0, SEEK_END);
     nca_header.nca_size = (uint64_t)ftello64(program_nca_file);
-    printf("Encrypting key area\n");
-    nca_encrypt_key_area(&nca_header, settings);
+    if (settings->has_title_key == 0)
+    {
+        printf("Encrypting key area\n");
+        nca_encrypt_key_area(&nca_header, settings);
+    }
+    else
+    {
+        // Create cert and tik
+        ticket_create_cert(settings);
+        ticket_create_tik(settings);
+    }
     printf("Encrypting header\n");
     nca_encrypt_header(&nca_header, settings);
 
@@ -549,7 +588,7 @@ void nca_create_meta(hp_settings_t *settings)
     {
         // Encrypt section 0
         printf("Encrypting section 0\n");
-        nca_encrypt_section(meta_nca_file, &nca_header, 0);
+        nca_encrypt_section(meta_nca_file, &nca_header, 0, settings);
     }
 
     // Encrypt header
@@ -667,7 +706,7 @@ void nca_encrypt_header(nca_header_t *nca_header, hp_settings_t *settings)
     free_aes_ctx(hdr_aes_ctx);
 }
 
-void nca_encrypt_section(FILE *nca_file, nca_header_t *nca_header, uint8_t section_index)
+void nca_encrypt_section(FILE *nca_file, nca_header_t *nca_header, uint8_t section_index, hp_settings_t *settings)
 {
     uint64_t start_offset = nca_header->section_entries[section_index].media_start_offset * 0x200;
     uint64_t end_offset = nca_header->section_entries[section_index].media_end_offset * 0x200;
@@ -690,9 +729,17 @@ void nca_encrypt_section(FILE *nca_file, nca_header_t *nca_header, uint8_t secti
         fprintf(stderr, "Failed to allocate file-read buffer!\n");
         exit(EXIT_FAILURE);
     }
+
+    // Set Section encryption key
+    uint8_t enc_key[0x10];
+    if (settings->has_title_key == 1)
+        memcpy(enc_key, settings->title_key, 0x10);
+    else
+        memcpy(enc_key, nca_header->encrypted_keys[2], 0x10);
+    aes_ctx_t *aes_ctx = new_aes_ctx(enc_key, 16, AES_MODE_CTR);
+
     uint64_t ofs = 0;
     fseeko64(nca_file, start_offset, SEEK_SET);
-    aes_ctx_t *aes_ctx = new_aes_ctx(nca_header->encrypted_keys[2], 16, AES_MODE_CTR);
     while (ofs < filesize)
     {
         if (ofs + read_size >= filesize)

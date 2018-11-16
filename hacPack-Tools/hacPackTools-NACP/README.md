@@ -3,7 +3,7 @@
 [![License: GPL v2](https://img.shields.io/badge/License-GPL%20v2-blue.svg)](https://www.gnu.org/licenses/old-licenses/gpl-2.0.en.html)
 
 hacPackTools-NACP is a tool for creating and viewing Nintendo Switch NACP files  
-With this tool, You can see the contents of NACPs, create NACPs from nacp.xml files and create .nacp.xml files from NACPs
+With this tool, you can see the contents of NACPs, create NACPs from nacp.xml files and create .nacp.xml files from NACPs
 
 ## Usage
 

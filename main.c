@@ -39,14 +39,17 @@ static void usage(void)
             "--logodir                Set program logo directory path\n"
             "--noromfs                Skip creating program romfs section\n"
             "--nologo                 Skip creating program logo section\n"
+            "--titlekey               Set Titlekey for encrypting nca\n"
             "Control NCA options:\n"
             "--romfsdir               Set control romfs directory path\n"
             "Manual NCA options:\n"
             "--romfsdir               Set manual romfs directory path\n"
+            "--titlekey               Set Titlekey for encrypting nca\n"
             "Data NCA options:\n"
             "--romfsdir               Set data romfs directory path\n"
             "PublicData NCA options:\n"
             "--romfsdir               Set publicdata romfs directory path\n"
+            "--titlekey               Set Titlekey for encrypting nca\n"
             "Metadata NCA options:\n"
             "--titletype              Set cnmt title type [application, addon, systemprogram, systemdata]\n"
             "--titleversion           Set title-version in hex with 4 bytes length, default value is 0x0\n"
@@ -135,6 +138,7 @@ int main(int argc, char **argv)
                 {"digest", 1, NULL, 23},
                 {"titleversion", 1, NULL, 24},
                 {"cnmt", 1, NULL, 25},
+                {"titlekey", 1, NULL, 26},
                 {NULL, 0, NULL, 0},
             };
 
@@ -246,10 +250,10 @@ int main(int argc, char **argv)
         case 17:
             settings.sdk_version = strtoul(optarg, NULL, 16);
             // Validating SDK Version
-            if (settings.sdk_version < 0x000B0000 || settings.sdk_version > 0x00FFFFFF)
+            if (settings.sdk_version < 0x000B0000)
             {
                 fprintf(stderr, "Error: Invalid SDK version: %08" PRIX32 "\n"
-                                "Valid SDK version range: 000B0000 - 00FFFFFF\n",
+                                "SDK version must be equal or greater than: 000B0000\n",
                         settings.sdk_version);
                 exit(EXIT_FAILURE);
             }
@@ -277,6 +281,10 @@ int main(int argc, char **argv)
             break;
         case 25:
             filepath_set(&settings.cnmt, optarg);
+            break;
+        case 26:
+            parse_hex_key(settings.title_key, optarg, 0x10);
+            settings.has_title_key = 1;
             break;
         default:
             usage();
@@ -370,6 +378,11 @@ int main(int argc, char **argv)
         case NCA_TYPE_CONTROL:
             if (settings.romfs_dir.valid == VALIDITY_INVALID)
                 usage();
+            else if (settings.has_title_key)
+            {
+                fprintf(stderr, "Titlekey is not supported for control nca\n");
+                usage();
+            }
             printf("----> Processing NACP\n");
             nacp_process(&settings);
             printf("\n");
@@ -378,6 +391,11 @@ int main(int argc, char **argv)
         case NCA_TYPE_DATA:
             if (settings.romfs_dir.valid == VALIDITY_INVALID)
                 usage();
+            else if (settings.has_title_key)
+            {
+                fprintf(stderr, "Titlekey is not supported for data nca\n");
+                usage();
+            }
             nca_create_romfs_type(&settings, nca_romfs_get_type(settings.nca_type));
             break;
         case NCA_TYPE_MANUAL:
@@ -398,6 +416,11 @@ int main(int argc, char **argv)
             }
             else if (settings.cnmt.valid == VALIDITY_VALID)
                 nca_create_meta(&settings);
+            else if (settings.has_title_key)
+            {
+                fprintf(stderr, "Titlekey is not supported for metadata nca\n");
+                usage();
+            }
             else if ((settings.programnca.valid == VALIDITY_INVALID || settings.controlnca.valid == VALIDITY_INVALID) && settings.title_type == TITLE_TYPE_APPLICATION)
                 usage();
             else if (settings.title_type == TITLE_TYPE_ADDON && settings.publicdatanca.valid == VALIDITY_INVALID)
