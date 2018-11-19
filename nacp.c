@@ -47,24 +47,5 @@ void nacp_process(hp_settings_t *settings)
         exit(EXIT_FAILURE);
     }
 
-    // Read TitleID
-    uint64_t title_id;
-    printf("Getting TitleID\n");
-    fseeko64(fl, 0x3038, SEEK_SET);
-    if (fread(&title_id, 1, 0x8, fl) != 0x8)
-    {
-        fprintf(stderr, "Failed to read file %s\n", nacp_filepath.char_path);
-        exit(EXIT_FAILURE);
-    }
-
-    printf("Validating TitleID\n");
-    // Make sure that tids are the same
-    if (title_id != settings->title_id)
-    {
-        fprintf(stderr, "Error: TitleID in control.nacp is different from entered TitleID: %016" PRIx64 " %016" PRIx64 "\n"
-                        , title_id, settings->title_id);
-        exit(EXIT_FAILURE);
-    }
-
     fclose(fl);
 }

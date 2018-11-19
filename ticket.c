@@ -32,7 +32,7 @@ void ticket_create_tik(hp_settings_t *settings)
 
     // Encrypting title key
     printf("Encrypting Titlekey\n");
-    uint8_t enc_key[0x10];
+    unsigned char enc_key[0x10];
     aes_ctx_t *aes_tkey_ctx = new_aes_ctx(settings->keyset.titlekeks[settings->keygeneration - 1], 16, AES_MODE_ECB);
     aes_encrypt(aes_tkey_ctx, enc_key, settings->title_key, 0x10);
     free_aes_ctx(aes_tkey_ctx);

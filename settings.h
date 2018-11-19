@@ -65,6 +65,14 @@ enum hp_title_type
     TITLE_TYPE_ADDON = 0x82
 };
 
+enum sig_type
+{
+    SIG_TYPE_DEFAULT,
+    SIG_TYPE_ZERO,
+    SIG_TYPE_FIXED,
+    SIG_TYPE_RANDOM
+};
+
 typedef struct
 {
     hp_keyset_t keyset;
@@ -83,12 +91,15 @@ typedef struct
     filepath_t publicdatanca;
     filepath_t ncadir;
     filepath_t cnmt;
+    filepath_t backup_dir;
     uint8_t noromfs;
     uint8_t nologo;
     uint8_t plaintext;
     uint8_t digest[0x20];
     uint32_t title_version;
     uint8_t has_title_key;
+    uint8_t nozeroacidsig;
+    uint8_t nozeroacidkey;
     unsigned char title_key[0x10];
     unsigned char *keyareakey;
     int keygeneration;
@@ -105,6 +116,7 @@ typedef struct
     enum hp_nca_type nca_type;
     enum hp_file_type file_type;
     enum hp_title_type title_type;
+    enum sig_type nca_sig;
 } hp_settings_t;
 
 #endif

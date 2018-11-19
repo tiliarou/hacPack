@@ -731,7 +731,7 @@ void nca_encrypt_section(FILE *nca_file, nca_header_t *nca_header, uint8_t secti
     }
 
     // Set Section encryption key
-    uint8_t enc_key[0x10];
+    unsigned char enc_key[0x10];
     if (settings->has_title_key == 1)
         memcpy(enc_key, settings->title_key, 0x10);
     else

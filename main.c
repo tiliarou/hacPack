@@ -9,6 +9,7 @@
 #include "extkeys.h"
 #include "version.h"
 #include "nacp.h"
+#include "npdm.h"
 #include "pfs0.h"
 
 /* hacPack by The-4n
@@ -24,6 +25,7 @@ static void usage(void)
             "-k, --keyset             Set keyset filepath, default filepath is ." OS_PATH_SEPARATOR "keys.dat\n"
             "-h, --help               Display usage\n"
             "--tempdir                Set temp directory filepath, default filepath is ." OS_PATH_SEPARATOR "hacbpack_temp" OS_PATH_SEPARATOR "\n"
+            "--backupdir              Set backup directory filepath, default filepath is ." OS_PATH_SEPARATOR "hacbpack_bkup" OS_PATH_SEPARATOR "\n"
             "--keygeneration          Set keygeneration for encrypting key area, default keygeneration is 1\n"
             "--plaintext              Skip encrypting sections and set section header block crypto type to plaintext\n"
             "--sdkversion             Set SDK version in hex, default SDK version is 000C1100\n"
@@ -40,6 +42,8 @@ static void usage(void)
             "--noromfs                Skip creating program romfs section\n"
             "--nologo                 Skip creating program logo section\n"
             "--titlekey               Set Titlekey for encrypting nca\n"
+            "--nozeronpdmsig          Leave npdm signature and doesn't 0 it\n"
+            "--nozeronpdmkey          Leave npdm nca key and doesn't 0 it\n"
             "Control NCA options:\n"
             "--romfsdir               Set control romfs directory path\n"
             "Manual NCA options:\n"
@@ -91,6 +95,10 @@ int main(int argc, char **argv)
     filepath_init(&settings.temp_dir);
     filepath_set(&settings.temp_dir, "hacpack_temp");
 
+    // Hardcode default backup directory
+    filepath_init(&settings.backup_dir);
+    filepath_set(&settings.backup_dir, "hacpack_backup");
+
     filepath_t keypath;
     filepath_init(&keypath);
     pki_initialize_keyset(&settings.keyset);
@@ -139,6 +147,9 @@ int main(int argc, char **argv)
                 {"titleversion", 1, NULL, 24},
                 {"cnmt", 1, NULL, 25},
                 {"titlekey", 1, NULL, 26},
+                {"backupdir", 1, NULL, 27},
+                {"nozeroacidsig", 0, NULL, 28},
+                {"nozeroacidkey", 0, NULL, 29},
                 {NULL, 0, NULL, 0},
             };
 
@@ -286,6 +297,15 @@ int main(int argc, char **argv)
             parse_hex_key(settings.title_key, optarg, 0x10);
             settings.has_title_key = 1;
             break;
+        case 27:
+            filepath_set(&settings.backup_dir, optarg);
+            break;
+        case 28:
+            settings.nozeroacidsig = 1;
+            break;
+        case 29:
+            settings.nozeroacidkey = 1;
+            break;
         default:
             usage();
         }
@@ -373,6 +393,9 @@ int main(int argc, char **argv)
                 usage();
             else if (settings.logo_dir.valid == VALIDITY_INVALID && settings.nologo == 0)
                 usage();
+            printf("----> Processing NPDM\n");
+            npdm_process(&settings);
+            printf("\n");
             nca_create_program(&settings);
             break;
         case NCA_TYPE_CONTROL:
