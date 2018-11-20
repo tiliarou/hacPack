@@ -30,6 +30,7 @@ static void usage(void)
             "--plaintext              Skip encrypting sections and set section header block crypto type to plaintext\n"
             "--sdkversion             Set SDK version in hex, default SDK version is 000C1100\n"
             "--keyareakey             Set key area key 2 in hex with 16 bytes length\n"
+            "--ncasig                 Set nca signature type [default, zero, random]\n"
             "Required options:\n"
             "-o, --output             Set output directory\n"
             "--type                   Set file type [nca, nsp]\n"
@@ -150,6 +151,7 @@ int main(int argc, char **argv)
                 {"backupdir", 1, NULL, 27},
                 {"nozeroacidsig", 0, NULL, 28},
                 {"nozeroacidkey", 0, NULL, 29},
+                {"ncasig", 1, NULL, 30},
                 {NULL, 0, NULL, 0},
             };
 
@@ -305,6 +307,19 @@ int main(int argc, char **argv)
             break;
         case 29:
             settings.nozeroacidkey = 1;
+            break;
+        case 30:
+            if (!strcmp(optarg, "default"))
+                settings.nca_sig = NCA_SIG_TYPE_DEFAULT;
+            else if (!strcmp(optarg, "zero"))
+                settings.nca_sig = NCA_SIG_TYPE_ZERO;
+            else if (!strcmp(optarg, "random"))
+                settings.nca_sig = NCA_SIG_TYPE_RANDOM;
+            else
+            {
+                fprintf(stderr, "Error: Invalid ncasig: %s\n", optarg);
+                usage();
+            }
             break;
         default:
             usage();

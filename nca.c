@@ -2,6 +2,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <inttypes.h>
+#include <time.h>
 #include "nca.h"
 #include "sha.h"
 #include "filepath.h"
@@ -127,7 +128,7 @@ void nca_create_romfs_type(hp_settings_t *settings, char *nca_type)
         nca_encrypt_section(romfs_nca_file, &nca_header, 0, settings);
     }
 
-    // Encrypt header
+    // Crypto type
     printf("Getting NCA file size\n");
     fseeko64(romfs_nca_file, 0, SEEK_END);
     nca_header.nca_size = (uint64_t)ftello64(romfs_nca_file);
@@ -142,10 +143,16 @@ void nca_create_romfs_type(hp_settings_t *settings, char *nca_type)
         ticket_create_cert(settings);
         ticket_create_tik(settings);
     }
+
+    // Fill NCA signature
+    printf("Generating signature\n");
+    nca_generate_sig(nca_header.fixed_key_sig, settings);
+
+    // Encrypt header
     printf("Encrypting header\n");
     nca_encrypt_header(&nca_header, settings);
 
-    // Write MCA header
+    // Write NCA header
     printf("\n===> Writing NCA header\n");
     printf("Writing NCA header to %s\n", romfs_nca_path.char_path);
     fseeko64(romfs_nca_file, 0, SEEK_SET);
@@ -399,7 +406,7 @@ void nca_create_program(hp_settings_t *settings)
         }
     }
 
-    // Encrypt header
+    // Crypto type
     printf("Getting NCA file size\n");
     fseeko64(program_nca_file, 0, SEEK_END);
     nca_header.nca_size = (uint64_t)ftello64(program_nca_file);
@@ -414,10 +421,15 @@ void nca_create_program(hp_settings_t *settings)
         ticket_create_cert(settings);
         ticket_create_tik(settings);
     }
+
+    // Fill NCA signature
+    printf("Generating signature\n");
+    nca_generate_sig(nca_header.fixed_key_sig, settings);
+
     printf("Encrypting header\n");
     nca_encrypt_header(&nca_header, settings);
 
-    // Write MCA header
+    // Write NCA header
     printf("\n===> Writing NCA header\n");
     printf("Writing NCA header to %s\n", program_nca_path.char_path);
     fseeko64(program_nca_file, 0, SEEK_SET);
@@ -591,16 +603,22 @@ void nca_create_meta(hp_settings_t *settings)
         nca_encrypt_section(meta_nca_file, &nca_header, 0, settings);
     }
 
-    // Encrypt header
+    // Encrypt kek
     printf("Getting NCA file size\n");
     fseeko64(meta_nca_file, 0, SEEK_END);
     nca_header.nca_size = (uint64_t)ftello64(meta_nca_file);
     printf("Encrypting key area\n");
     nca_encrypt_key_area(&nca_header, settings);
+
+    // Fill NCA signature
+    printf("Generating signature\n");
+    nca_generate_sig(nca_header.fixed_key_sig, settings);
+
+    // Encrypt header
     printf("Encrypting header\n");
     nca_encrypt_header(&nca_header, settings);
 
-    // Write MCA header
+    // Write NCA header
     printf("\n===> Writing NCA header\n");
     printf("Writing NCA header to %s\n", meta_nca_path.char_path);
     fseeko64(meta_nca_file, 0, SEEK_SET);
@@ -820,6 +838,23 @@ void nca_set_keygen(nca_header_t *nca_header, hp_settings_t *settings)
             nca_header->crypto_type = 0x2;
             nca_header->crypto_type2 = settings->keygeneration;
         }
+    }
+}
+
+void nca_generate_sig(uint8_t *nca_sig, hp_settings_t *settings)
+{
+    switch (settings->nca_sig)
+    {
+        case NCA_SIG_TYPE_DEFAULT:
+            memset(nca_sig, 4, 0x100);
+            break;
+        case NCA_SIG_TYPE_RANDOM:
+            srand(time(NULL));
+            for (long nsigc = 0; nsigc < 0x100; nsigc++)
+                nca_sig[nsigc] = rand() % 0xff;
+            break;
+        case NCA_SIG_TYPE_ZERO:
+            break;
     }
 }
 

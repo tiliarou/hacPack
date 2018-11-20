@@ -65,12 +65,11 @@ enum hp_title_type
     TITLE_TYPE_ADDON = 0x82
 };
 
-enum sig_type
+enum nca_sig_type
 {
-    SIG_TYPE_DEFAULT,
-    SIG_TYPE_ZERO,
-    SIG_TYPE_FIXED,
-    SIG_TYPE_RANDOM
+    NCA_SIG_TYPE_DEFAULT = 0,
+    NCA_SIG_TYPE_ZERO = 1,
+    NCA_SIG_TYPE_RANDOM = 2
 };
 
 typedef struct
@@ -116,7 +115,7 @@ typedef struct
     enum hp_nca_type nca_type;
     enum hp_file_type file_type;
     enum hp_title_type title_type;
-    enum sig_type nca_sig;
+    enum nca_sig_type nca_sig;
 } hp_settings_t;
 
 #endif
