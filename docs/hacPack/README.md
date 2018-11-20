@@ -8,7 +8,7 @@ Title id is 8-bytes hex value which connects ncas to each other
 Valid Title id range is: 0100000000000000 - 01ffffffffffffff  
 If you are repacking ncas, make sure to use the original title id of nca  
 
-##### Switch Title ID template:
+##### Switch TitleID template:
 
 Application: 01xxxxxxxxxxxxxx000  
 Patch(Update): Application + 0x800  
@@ -16,20 +16,36 @@ AddOn(DLC): Application + 0x1000 + 0x01-0xff
 
 ### Type: --type
 
-If you want to create NCA, use --type nca, Otherwise if you want to create NSP, use --type nsp  
+If you want to create a NCA, use --type nca, Otherwise if you want to create a NSP, use --type nsp  
 
 ## NCA Options
 
-### Section Encryption Type: --plaintext
+### NCA signature: --ncasig
 
-hacPack use AES-CTR encryption for section by default.  
+By default, hacPack fills nca signature with 0x04, you can use --ncasig random to fill it with random bytes or --ncasig zero to fill it with all zero bytes
+
+### Key area key 2: --keyareakey
+
+This is 16-bytes key which hacPack use to encrypt sections.  
+There's a default key area key 2 in hacPack and you can change it by --keyareakey option.
+
+### Crypto type: --titlekey
+
+Titlekey size is 16 bytes  
+If no titlekey is specified, hacPack creates standard crypto nca and uses key area key 2 to encrypt sections  
+Otherwise, hacPack creates titlekey crypto nca and use titlekey to encrypt sections  
+Titlekey is only supported on Program, Manual(HtmlDocument) and PublicData ncas  
+
+### Section encryption type: --plaintext
+
+hacPack uses AES-CTR encryption for section by default.  
 You can use --plaintext to change section encryption type to unencrypted (plaintext).  
 Logo section in program nca is always plaintext.
 
 ### Key generation: --keygeneration
 
-Keygeneration is a key that hacPack use to encrypt key area in ncas.  
-It is a number between 1-32 and it describes the 'key_area_key_application' key that hacPack use in encryption.  
+Keygeneration is a key that hacPack uses to encrypt key area in ncas.  
+It is a number between 1-32 and it describes the 'key_area_key_application' key that hacPack uses in encryption.  
 Firmwares always support applications with keygenerations up to the keygeneration they ship with.  
 
 Keygeneration | Firmware
@@ -40,11 +56,7 @@ Keygeneration | Firmware
 4 | 4.0.0 - 4.1.0
 5 | 5.0.0 - 5.1.0
 6 | 6.0.0 - 6.0.1
-
-### Key area key 2: --keyareakey
-
-This is 16-bytes key which hacPack use to encrypt sections.  
-There's a default key area key 2 in hacPack and you can change it by --keyareakey option.
+7 | 6.2.0
 
 ### SDK Version: --sdkverison
 
@@ -61,6 +73,7 @@ Section 0 (known as exefs) contains main and main.npdm, it also may contain rtld
 Section 1 (known as romfs) contains romfs data  
 Section 2 (known as logo) contains logo data including "NintendoLogo.png" and "StartupMovie.gif"  
 You can use --nologo to skip logo and --noromfs to skip romfs section in program nca  
+hacPack zeros ACID signature and key in NPDM, You can use --nozeroacidsig and --nozeroacidkey to skip zeroing of acid signature and key  
 
 ```
 *nix: hacpack -o ./out/ --type nca --ncatype program --titleid 0104444444444000 --exefsdir ./exefs/ --romfsdir ./romfs/ --logodir ./logo/  
