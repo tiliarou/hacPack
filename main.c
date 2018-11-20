@@ -25,7 +25,7 @@ static void usage(void)
             "-k, --keyset             Set keyset filepath, default filepath is ." OS_PATH_SEPARATOR "keys.dat\n"
             "-h, --help               Display usage\n"
             "--tempdir                Set temp directory filepath, default filepath is ." OS_PATH_SEPARATOR "hacbpack_temp" OS_PATH_SEPARATOR "\n"
-            "--backupdir              Set backup directory filepath, default filepath is ." OS_PATH_SEPARATOR "hacbpack_bkup" OS_PATH_SEPARATOR "\n"
+            "--backupdir              Set backup directory filepath, default filepath is ." OS_PATH_SEPARATOR "hacbpack_backup" OS_PATH_SEPARATOR "\n"
             "--keygeneration          Set keygeneration for encrypting key area, default keygeneration is 1\n"
             "--plaintext              Skip encrypting sections and set section header block crypto type to plaintext\n"
             "--sdkversion             Set SDK version in hex, default SDK version is 000C1100\n"
@@ -177,7 +177,7 @@ int main(int argc, char **argv)
                 settings.file_type = FILE_TYPE_NSP;
             else
             {
-                fprintf(stderr, "Error: Invalid type: %s\n", optarg);
+                fprintf(stderr, "Error: invalid type: %s\n", optarg);
                 usage();
             }
             break;
@@ -196,7 +196,7 @@ int main(int argc, char **argv)
                 settings.nca_type = NCA_TYPE_META;
             else
             {
-                fprintf(stderr, "Error: Invalid ncatype: %s\n", optarg);
+                fprintf(stderr, "Error: invalid ncatype: %s\n", optarg);
                 usage();
             }
             break;
@@ -211,7 +211,7 @@ int main(int argc, char **argv)
                 settings.title_type = TITLE_TYPE_SYSTEMDATA;
             else
             {
-                fprintf(stderr, "Error: Invalid titletype: %s\n", optarg);
+                fprintf(stderr, "Error: invalid titletype: %s\n", optarg);
                 usage();
             }
             break;
@@ -265,7 +265,7 @@ int main(int argc, char **argv)
             // Validating SDK Version
             if (settings.sdk_version < 0x000B0000)
             {
-                fprintf(stderr, "Error: Invalid SDK version: %08" PRIX32 "\n"
+                fprintf(stderr, "Error: invalid SDK version: %08" PRIX32 "\n"
                                 "SDK version must be equal or greater than: 000B0000\n",
                         settings.sdk_version);
                 exit(EXIT_FAILURE);
@@ -317,7 +317,7 @@ int main(int argc, char **argv)
                 settings.nca_sig = NCA_SIG_TYPE_RANDOM;
             else
             {
-                fprintf(stderr, "Error: Invalid ncasig: %s\n", optarg);
+                fprintf(stderr, "Error: invalid ncasig: %s\n", optarg);
                 usage();
             }
             break;
@@ -325,6 +325,8 @@ int main(int argc, char **argv)
             usage();
         }
     }
+
+    printf("----> Preparing:\n");
 
     // Try to populate default keyfile.
     FILE *keyfile = NULL;
@@ -389,12 +391,21 @@ int main(int argc, char **argv)
     if (settings.out_dir.valid == VALIDITY_INVALID)
         usage();
 
-    // Remove existing temp directory and create new one + out directory
+    // Remove existing temp directory and create new one + out
     printf("Removing existing temp directory\n");
     filepath_remove_directory(&settings.temp_dir);
-    printf("Creating temp and out directories\n");
+    printf("Creating temp directory\n");
     os_makedir(settings.temp_dir.os_path);
+    printf("Creating out directory\n");
     os_makedir(settings.out_dir.os_path);
+
+    // Create backup directory
+    printf("Creating backup directory\n");
+    os_makedir(settings.backup_dir.os_path);
+    // Add titleid to backup folder path
+    filepath_append(&settings.backup_dir, "%016" PRIx64, settings.title_id);
+    os_makedir(settings.backup_dir.os_path);
+
     printf("\n");
 
     if (settings.file_type == FILE_TYPE_NCA)
@@ -449,7 +460,7 @@ int main(int argc, char **argv)
         case NCA_TYPE_META:
             if (settings.title_type == 0)
             {
-                fprintf(stderr, "Error: Invalid titletype\n");
+                fprintf(stderr, "Error: invalid titletype\n");
                 usage();
             }
             else if (settings.cnmt.valid == VALIDITY_VALID)
