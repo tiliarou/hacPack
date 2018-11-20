@@ -347,18 +347,34 @@ int main(int argc, char **argv)
     }
 
     // Make sure that key_area_key_application_keygen exists
-    uint8_t has_keygen_key = 0;
-    for (unsigned int i = 0; i < 0x10; i++)
+    uint8_t has_kek = 0;
+    for (unsigned int kekc = 0; kekc < 0x10; kekc++)
     {
-        if (settings.keyset.key_area_keys[settings.keygeneration - 1][0][i] != 0)
+        if (settings.keyset.key_area_keys[settings.keygeneration - 1][0][kekc] != 0)
         {
-            has_keygen_key = 1;
+            has_kek = 1;
             break;
         }
     }
-    if (has_keygen_key == 0)
+    if (has_kek == 0)
     {
         fprintf(stderr, "Error: key_area_key_application for keygeneration %i is not present in keyset file\n", settings.keygeneration);
+        return EXIT_FAILURE;
+    }
+
+    // Make sure that titlekek_keygen exists
+    uint8_t has_titlekek = 0;
+    for (unsigned int tkekc = 0; tkekc < 0x10; tkekc++)
+    {
+        if (settings.keyset.titlekeks[settings.keygeneration - 1][tkekc] != 0)
+        {
+            has_titlekek = 1;
+            break;
+        }
+    }
+    if (has_titlekek == 0)
+    {
+        fprintf(stderr, "Error: titlekek for keygeneration %i is not present in keyset file\n", settings.keygeneration);
         return EXIT_FAILURE;
     }
 
