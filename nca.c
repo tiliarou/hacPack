@@ -726,8 +726,10 @@ void nca_encrypt_header(nca_header_t *nca_header, hp_settings_t *settings)
 
 void nca_encrypt_section(FILE *nca_file, nca_header_t *nca_header, uint8_t section_index, hp_settings_t *settings)
 {
-    uint64_t start_offset = nca_header->section_entries[section_index].media_start_offset * 0x200;
-    uint64_t end_offset = nca_header->section_entries[section_index].media_end_offset * 0x200;
+    uint64_t start_offset = nca_header->section_entries[section_index].media_start_offset;
+    start_offset *= 0x200;
+    uint64_t end_offset = nca_header->section_entries[section_index].media_end_offset;
+    end_offset *= 0x200;
     uint64_t filesize = end_offset - start_offset;
 
     // Calculate counter for section encryption

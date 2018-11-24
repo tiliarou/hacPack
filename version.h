@@ -7,6 +7,6 @@
     #define USAGE_PROGRAM_NAME "hacpack"
 #endif
 
-#define HACPACK_VERSION "v1.30"
+#define HACPACK_VERSION "v1.31"
 
 #endif

@@ -59,11 +59,12 @@ void ivfc_create_level(filepath_t *dst_level_file, filepath_t *src_level_file, u
     }
 
     uint64_t curr_offset = (uint64_t)ftello64(dst_file);
-    uint64_t padding_size = (((curr_offset / hash_block_size) + 1) * hash_block_size) - curr_offset;
-    if (curr_offset % hash_block_size != 0)
+    uint64_t padding_size = hash_block_size - (curr_offset % hash_block_size);
+    if (padding_size != 0)
     {
-        memset(buf, 0, hash_block_size);
-        fwrite(buf, 1, padding_size, dst_file);
+        unsigned char *padding_buf = (unsigned char*)calloc(1, padding_size);
+        fwrite(padding_buf, 1, padding_size, dst_file);
+        free(padding_buf);
     }
 
     *out_size = (uint64_t)ftello64(dst_file);
