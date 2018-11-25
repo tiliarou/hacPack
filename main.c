@@ -25,11 +25,12 @@ static void usage(void)
             "-k, --keyset             Set keyset filepath, default filepath is ." OS_PATH_SEPARATOR "keys.dat\n"
             "-h, --help               Display usage\n"
             "--tempdir                Set temp directory filepath, default filepath is ." OS_PATH_SEPARATOR "hacbpack_temp" OS_PATH_SEPARATOR "\n"
-            "--backupdir              Set backup directory filepath, default filepath is ." OS_PATH_SEPARATOR "hacbpack_bkup" OS_PATH_SEPARATOR "\n"
+            "--backupdir              Set backup directory filepath, default filepath is ." OS_PATH_SEPARATOR "hacbpack_backup" OS_PATH_SEPARATOR "\n"
             "--keygeneration          Set keygeneration for encrypting key area, default keygeneration is 1\n"
             "--plaintext              Skip encrypting sections and set section header block crypto type to plaintext\n"
             "--sdkversion             Set SDK version in hex, default SDK version is 000C1100\n"
             "--keyareakey             Set key area key 2 in hex with 16 bytes length\n"
+            "--ncasig                 Set nca signature type [default, zero, random]\n"
             "Required options:\n"
             "-o, --output             Set output directory\n"
             "--type                   Set file type [nca, nsp]\n"
@@ -150,6 +151,7 @@ int main(int argc, char **argv)
                 {"backupdir", 1, NULL, 27},
                 {"nozeroacidsig", 0, NULL, 28},
                 {"nozeroacidkey", 0, NULL, 29},
+                {"ncasig", 1, NULL, 30},
                 {NULL, 0, NULL, 0},
             };
 
@@ -175,7 +177,7 @@ int main(int argc, char **argv)
                 settings.file_type = FILE_TYPE_NSP;
             else
             {
-                fprintf(stderr, "Error: Invalid type: %s\n", optarg);
+                fprintf(stderr, "Error: invalid type: %s\n", optarg);
                 usage();
             }
             break;
@@ -194,7 +196,7 @@ int main(int argc, char **argv)
                 settings.nca_type = NCA_TYPE_META;
             else
             {
-                fprintf(stderr, "Error: Invalid ncatype: %s\n", optarg);
+                fprintf(stderr, "Error: invalid ncatype: %s\n", optarg);
                 usage();
             }
             break;
@@ -209,7 +211,7 @@ int main(int argc, char **argv)
                 settings.title_type = TITLE_TYPE_SYSTEMDATA;
             else
             {
-                fprintf(stderr, "Error: Invalid titletype: %s\n", optarg);
+                fprintf(stderr, "Error: invalid titletype: %s\n", optarg);
                 usage();
             }
             break;
@@ -263,7 +265,7 @@ int main(int argc, char **argv)
             // Validating SDK Version
             if (settings.sdk_version < 0x000B0000)
             {
-                fprintf(stderr, "Error: Invalid SDK version: %08" PRIX32 "\n"
+                fprintf(stderr, "Error: invalid SDK version: %08" PRIX32 "\n"
                                 "SDK version must be equal or greater than: 000B0000\n",
                         settings.sdk_version);
                 exit(EXIT_FAILURE);
@@ -306,10 +308,25 @@ int main(int argc, char **argv)
         case 29:
             settings.nozeroacidkey = 1;
             break;
+        case 30:
+            if (!strcmp(optarg, "default"))
+                settings.nca_sig = NCA_SIG_TYPE_DEFAULT;
+            else if (!strcmp(optarg, "zero"))
+                settings.nca_sig = NCA_SIG_TYPE_ZERO;
+            else if (!strcmp(optarg, "random"))
+                settings.nca_sig = NCA_SIG_TYPE_RANDOM;
+            else
+            {
+                fprintf(stderr, "Error: invalid ncasig: %s\n", optarg);
+                usage();
+            }
+            break;
         default:
             usage();
         }
     }
+
+    printf("----> Preparing:\n");
 
     // Try to populate default keyfile.
     FILE *keyfile = NULL;
@@ -330,18 +347,34 @@ int main(int argc, char **argv)
     }
 
     // Make sure that key_area_key_application_keygen exists
-    uint8_t has_keygen_key = 0;
-    for (unsigned int i = 0; i < 0x10; i++)
+    uint8_t has_kek = 0;
+    for (unsigned int kekc = 0; kekc < 0x10; kekc++)
     {
-        if (settings.keyset.key_area_keys[settings.keygeneration - 1][0][i] != 0)
+        if (settings.keyset.key_area_keys[settings.keygeneration - 1][0][kekc] != 0)
         {
-            has_keygen_key = 1;
+            has_kek = 1;
             break;
         }
     }
-    if (has_keygen_key == 0)
+    if (has_kek == 0)
     {
         fprintf(stderr, "Error: key_area_key_application for keygeneration %i is not present in keyset file\n", settings.keygeneration);
+        return EXIT_FAILURE;
+    }
+
+    // Make sure that titlekek_keygen exists
+    uint8_t has_titlekek = 0;
+    for (unsigned int tkekc = 0; tkekc < 0x10; tkekc++)
+    {
+        if (settings.keyset.titlekeks[settings.keygeneration - 1][tkekc] != 0)
+        {
+            has_titlekek = 1;
+            break;
+        }
+    }
+    if (has_titlekek == 0)
+    {
+        fprintf(stderr, "Error: titlekek for keygeneration %i is not present in keyset file\n", settings.keygeneration);
         return EXIT_FAILURE;
     }
 
@@ -374,12 +407,21 @@ int main(int argc, char **argv)
     if (settings.out_dir.valid == VALIDITY_INVALID)
         usage();
 
-    // Remove existing temp directory and create new one + out directory
+    // Remove existing temp directory and create new one + out
     printf("Removing existing temp directory\n");
     filepath_remove_directory(&settings.temp_dir);
-    printf("Creating temp and out directories\n");
+    printf("Creating temp directory\n");
     os_makedir(settings.temp_dir.os_path);
+    printf("Creating out directory\n");
     os_makedir(settings.out_dir.os_path);
+
+    // Create backup directory
+    printf("Creating backup directory\n");
+    os_makedir(settings.backup_dir.os_path);
+    // Add titleid to backup folder path
+    filepath_append(&settings.backup_dir, "%016" PRIx64, settings.title_id);
+    os_makedir(settings.backup_dir.os_path);
+
     printf("\n");
 
     if (settings.file_type == FILE_TYPE_NCA)
@@ -434,7 +476,7 @@ int main(int argc, char **argv)
         case NCA_TYPE_META:
             if (settings.title_type == 0)
             {
-                fprintf(stderr, "Error: Invalid titletype\n");
+                fprintf(stderr, "Error: invalid titletype\n");
                 usage();
             }
             else if (settings.cnmt.valid == VALIDITY_VALID)

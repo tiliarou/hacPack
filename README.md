@@ -19,6 +19,7 @@ Key Name | Description
 -------- | -----------
 header_key | NCA Header Key
 key_area_key_application_xx | Application key area encryption keys
+titlekek_xx | Title key encryption key
 
 ### CLI Options  
 
@@ -31,10 +32,12 @@ General options:
 -k, --keyset             Set keyset filepath, default filepath is ./keys.dat  
 -h, --help               Display usage  
 --tempdir                Set temp directory filepath, default filepath is ./hacpack_temp/  
+--backupdir              Set backup directory filepath, default filepath is ./hacbpack_backup/  
 --keygeneration          Set keygeneration for encrypting key area, default keygeneration is 1  
 --plaintext              Skip encrypting sections and set section header block crypto type to plaintext  
 --sdkversion             Set SDK version in hex, default SDK version is 000C1100  
 --keyareakey             Set key area key 2 in hex with 16 bytes length  
+--ncasig                 Set nca signature type [default, zero, random]  
 Required options:  
 -o, --output             Set output directory  
 --type                   Set file type [nca, nsp]  
@@ -46,14 +49,19 @@ Program NCA options:
 --logodir                Set program logo directory path  
 --noromfs                Skip creating program romfs section  
 --nologo                 Skip creating program logo section  
+--titlekey               Set Titlekey for encrypting nca  
+--nozeronpdmsig          Leave npdm signature and doesn't 0 it  
+--nozeronpdmkey          Leave npdm nca key and doesn't 0 it  
 Control NCA options:  
 --romfsdir               Set control romfs directory path  
 Manual NCA options:  
 --romfsdir               Set manual romfs directory path  
+--titlekey               Set Titlekey for encrypting nca  
 Data NCA options:  
 --romfsdir               Set data romfs directory path  
 PublicData NCA options:  
 --romfsdir               Set publicdata romfs directory path  
+--titlekey               Set Titlekey for encrypting nca  
 Metadata NCA options:  
 --titletype              Set cnmt title type [application, addon, systemprogram, systemdata]  
 --titleversion           Set title-version in hex with 4 bytes length, default value is 0x0  

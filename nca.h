@@ -104,6 +104,7 @@ void nca_encrypt_header(nca_header_t *nca_header, hp_settings_t *settings);
 void nca_encrypt_section(FILE *nca_file, nca_header_t *nca_header, uint8_t section_index, hp_settings_t *settings);
 void nca_update_ctr(unsigned char *ctr, uint64_t ofs);
 void nca_set_keygen(nca_header_t *nca_header, hp_settings_t *settings);
+void nca_generate_sig(uint8_t *nca_sig, hp_settings_t *settings);
 char *nca_romfs_get_type(uint8_t type);
 
 #endif

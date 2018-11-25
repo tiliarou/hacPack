@@ -5,7 +5,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:hacPack_GUI"
         mc:Ignorable="d"
-        Title="hacPack GUI v1.20 by The-4n" Height="565.615" Width="766.694" WindowStartupLocation="Manual" ResizeMode="NoResize" Loaded="Window_Loaded">
+        Title="hacPack GUI v1.31 by The-4n" Height="565.615" Width="766.694" WindowStartupLocation="Manual" ResizeMode="NoResize" Loaded="Window_Loaded">
     <Grid HorizontalAlignment="Left" Width="759" Margin="0,0,-5.667,0.333">
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="433*"/>
