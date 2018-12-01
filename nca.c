@@ -742,7 +742,7 @@ void nca_encrypt_section(FILE *nca_file, nca_header_t *nca_header, uint8_t secti
         ctr_ofs >>= 8;
     }
 
-    uint64_t read_size = 0x6000000; // 16 MB buffer.
+    uint64_t read_size = 0x6000000; //~100 MB buffer.
     unsigned char *buf = malloc(read_size);
     if (buf == NULL)
     {
