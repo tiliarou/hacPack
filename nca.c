@@ -847,7 +847,7 @@ void nca_generate_sig(uint8_t *nca_sig, hp_settings_t *settings)
 {
     switch (settings->nca_sig)
     {
-        case NCA_SIG_TYPE_DEFAULT:
+        case NCA_SIG_TYPE_STATIC:
             memset(nca_sig, 4, 0x100);
             break;
         case NCA_SIG_TYPE_RANDOM:

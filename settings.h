@@ -72,8 +72,8 @@ enum hp_title_type
 
 enum nca_sig_type
 {
-    NCA_SIG_TYPE_DEFAULT = 0,
-    NCA_SIG_TYPE_ZERO = 1,
+    NCA_SIG_TYPE_ZERO = 0,
+    NCA_SIG_TYPE_STATIC = 1,
     NCA_SIG_TYPE_RANDOM = 2
 };
 

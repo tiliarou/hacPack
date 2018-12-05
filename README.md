@@ -37,7 +37,7 @@ General options:
 --plaintext              Skip encrypting sections and set section header block crypto type to plaintext  
 --sdkversion             Set SDK version in hex, default SDK version is 000C1100  
 --keyareakey             Set key area key 2 in hex with 16 bytes length  
---ncasig                 Set nca signature type [default, zero, random]  
+--ncasig                 Set nca signature type [zero, static, random]. Default is zero  
 Required options:  
 -o, --output             Set output directory  
 --type                   Set file type [nca, nsp]  

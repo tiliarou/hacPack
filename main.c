@@ -30,7 +30,7 @@ static void usage(void)
             "--plaintext              Skip encrypting sections and set section header block crypto type to plaintext\n"
             "--sdkversion             Set SDK version in hex, default SDK version is 000C1100\n"
             "--keyareakey             Set key area key 2 in hex with 16 bytes length\n"
-            "--ncasig                 Set nca signature type [default, zero, random]\n"
+            "--ncasig                 Set nca signature type [zero, static, random]. Default is zero\n"
             "Required options:\n"
             "-o, --output             Set output directory\n"
             "--type                   Set file type [nca, nsp]\n"
@@ -309,8 +309,8 @@ int main(int argc, char **argv)
             settings.nozeroacidkey = 1;
             break;
         case 30:
-            if (!strcmp(optarg, "default"))
-                settings.nca_sig = NCA_SIG_TYPE_DEFAULT;
+            if (!strcmp(optarg, "static"))
+                settings.nca_sig = NCA_SIG_TYPE_STATIC;
             else if (!strcmp(optarg, "zero"))
                 settings.nca_sig = NCA_SIG_TYPE_ZERO;
             else if (!strcmp(optarg, "random"))
@@ -346,6 +346,22 @@ int main(int argc, char **argv)
         return EXIT_FAILURE;
     }
 
+    // Make sure that header_key exists
+    uint8_t has_header_Key = 0;
+    for (unsigned int i = 0; i < 0x10; i++)
+    {
+        if (settings.keyset.header_key[i] != 0)
+        {
+            has_header_Key = 1;
+            break;
+        }
+    }
+    if (has_header_Key == 0)
+    {
+        fprintf(stderr, "Error: header_key is not present in keyset file\n");
+        return EXIT_FAILURE;
+    }
+
     // Make sure that key_area_key_application_keygen exists
     uint8_t has_kek = 0;
     for (unsigned int kekc = 0; kekc < 0x10; kekc++)
@@ -362,36 +378,23 @@ int main(int argc, char **argv)
         return EXIT_FAILURE;
     }
 
-    // Make sure that titlekek_keygen exists
-    uint8_t has_titlekek = 0;
-    for (unsigned int tkekc = 0; tkekc < 0x10; tkekc++)
+    // Make sure that titlekek_keygen exists if titlekey is specified
+    if (settings.has_title_key == 1)
     {
-        if (settings.keyset.titlekeks[settings.keygeneration - 1][tkekc] != 0)
+        uint8_t has_titlekek = 0;
+        for (unsigned int tkekc = 0; tkekc < 0x10; tkekc++)
         {
-            has_titlekek = 1;
-            break;
+            if (settings.keyset.titlekeks[settings.keygeneration - 1][tkekc] != 0)
+            {
+                has_titlekek = 1;
+                break;
+            }
         }
-    }
-    if (has_titlekek == 0)
-    {
-        fprintf(stderr, "Error: titlekek for keygeneration %i is not present in keyset file\n", settings.keygeneration);
-        return EXIT_FAILURE;
-    }
-
-    // Make sure that header_key exists
-    uint8_t has_header_Key = 0;
-    for (unsigned int i = 0; i < 0x10; i++)
-    {
-        if (settings.keyset.header_key[i] != 0)
+        if (has_titlekek == 0)
         {
-            has_header_Key = 1;
-            break;
+            fprintf(stderr, "Error: titlekek for keygeneration %i is not present in keyset file\n", settings.keygeneration);
+            return EXIT_FAILURE;
         }
-    }
-    if (has_header_Key == 0)
-    {
-        fprintf(stderr, "Error: header_key is not present in keyset file\n");
-        return EXIT_FAILURE;
     }
 
     // Make sure that titleid is within valid range

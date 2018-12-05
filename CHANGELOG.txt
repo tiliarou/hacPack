@@ -1,4 +1,8 @@
-v.32
+v1.33
+Added support for keygeneration 7
+Changed default ncasig to zero
+
+v1.32
 Changed hash block size for better compatibility
 Increased NCA section encryption buffer size
 
