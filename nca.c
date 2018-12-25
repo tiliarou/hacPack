@@ -81,6 +81,8 @@ void nca_create_romfs_type(hp_settings_t *settings, char *nca_type)
     nca_header.content_type = settings->nca_type;
     nca_header.sdk_version = settings->sdk_version;
     nca_header.title_id = settings->title_id;
+    if (settings->nca_disttype == NCA_DISTRIBUTION_GAMECARD)
+        nca_header.distribution = 1;
     nca_set_keygen(&nca_header, settings);
 
     nca_header.section_entries[0].media_start_offset = 0x6;                                        // 0xC00 / 0x200
@@ -113,9 +115,9 @@ void nca_create_romfs_type(hp_settings_t *settings, char *nca_type)
     else
     {
         // Calculate RightsID
-        for (int ridc=0; ridc < 8; ridc++)
+        for (int ridc = 0; ridc < 8; ridc++)
         {
-            nca_header.rights_id[7-ridc] = (settings->title_id >> (8*ridc) & 0xff);
+            nca_header.rights_id[7 - ridc] = (settings->title_id >> (8 * ridc) & 0xff);
         }
         nca_header.rights_id[15] = (uint8_t)settings->keygeneration;
     }
@@ -237,6 +239,8 @@ void nca_create_program(hp_settings_t *settings)
     nca_header.content_type = 0x0; // Program
     nca_header.sdk_version = settings->sdk_version;
     nca_header.title_id = settings->title_id;
+    if (settings->nca_disttype == NCA_DISTRIBUTION_GAMECARD)
+        nca_header.distribution = 1;
     nca_set_keygen(&nca_header, settings);
 
     nca_header.section_entries[0].media_start_offset = 0x6;                                          // 0xC00 / 0x200
@@ -388,9 +392,9 @@ void nca_create_program(hp_settings_t *settings)
     else
     {
         // Calculate RightsID
-        for (int ridc=0; ridc < 8; ridc++)
+        for (int ridc = 0; ridc < 8; ridc++)
         {
-            nca_header.rights_id[7-ridc] = (settings->title_id >> (8*ridc) & 0xff);
+            nca_header.rights_id[7 - ridc] = (settings->title_id >> (8 * ridc) & 0xff);
         }
         nca_header.rights_id[15] = (uint8_t)settings->keygeneration;
     }
@@ -570,6 +574,8 @@ void nca_create_meta(hp_settings_t *settings)
     nca_header.content_type = 0x1; // Meta
     nca_header.sdk_version = settings->sdk_version;
     nca_header.title_id = settings->title_id;
+    if (settings->nca_disttype == NCA_DISTRIBUTION_GAMECARD)
+        nca_header.distribution = 1;
     nca_set_keygen(&nca_header, settings);
 
     nca_header.section_entries[0].media_start_offset = 0x6;                                       // 0xC00 / 0x200
@@ -850,16 +856,16 @@ void nca_generate_sig(uint8_t *nca_sig, hp_settings_t *settings)
 {
     switch (settings->nca_sig)
     {
-        case NCA_SIG_TYPE_STATIC:
-            memset(nca_sig, 4, 0x100);
-            break;
-        case NCA_SIG_TYPE_RANDOM:
-            srand(time(NULL));
-            for (long nsigc = 0; nsigc < 0x100; nsigc++)
-                nca_sig[nsigc] = rand() % 0xff;
-            break;
-        case NCA_SIG_TYPE_ZERO:
-            break;
+    case NCA_SIG_TYPE_STATIC:
+        memset(nca_sig, 4, 0x100);
+        break;
+    case NCA_SIG_TYPE_RANDOM:
+        srand(time(NULL));
+        for (long nsigc = 0; nsigc < 0x100; nsigc++)
+            nca_sig[nsigc] = rand() % 0xff;
+        break;
+    case NCA_SIG_TYPE_ZERO:
+        break;
     }
 }
 

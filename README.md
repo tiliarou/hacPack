@@ -47,11 +47,10 @@ Program NCA options:
 --exefsdir               Set program exefs directory path  
 --romfsdir               Set program romfs directory path  
 --logodir                Set program logo directory path  
---noromfs                Skip creating program romfs section  
---nologo                 Skip creating program logo section  
 --titlekey               Set Titlekey for encrypting nca  
 --nozeronpdmsig          Leave npdm signature and doesn't 0 it  
 --nozeronpdmkey          Leave npdm nca key and doesn't 0 it  
+--disttype               Set nca distribution type [download, gamecard]. Default is download  
 Control NCA options:  
 --romfsdir               Set control romfs directory path  
 Manual NCA options:  

@@ -31,6 +31,7 @@ static void usage(void)
             "--sdkversion             Set SDK version in hex, default SDK version is 000C1100\n"
             "--keyareakey             Set key area key 2 in hex with 16 bytes length\n"
             "--ncasig                 Set nca signature type [zero, static, random]. Default is zero\n"
+            "--disttype               Set nca distribution type [download, gamecard]. Default is download\n"
             "Required options:\n"
             "-o, --output             Set output directory\n"
             "--type                   Set file type [nca, nsp]\n"
@@ -132,7 +133,7 @@ int main(int argc, char **argv)
                 {"legalnca", 1, NULL, 10},
                 {"htmldocnca", 1, NULL, 11},
                 {"metanca", 1, NULL, 12},
-                //{"", 0, NULL, 13},
+                {"disttype", 1, NULL, 13},
                 //{"", 0, NULL, 14},
                 {"plaintext", 0, NULL, 15},
                 {"keygeneration", 1, NULL, 16},
@@ -240,8 +241,17 @@ int main(int argc, char **argv)
         case 12:
             filepath_set(&settings.metanca, optarg);
             break;
-        //case 13:
-        //    break;
+        case 13:
+            if (!strcmp(optarg, "download"))
+                settings.nca_disttype = NCA_DISTRIBUTION_DOWNLOAD;
+            else if (!strcmp(optarg, "gamecard"))
+                settings.nca_disttype = NCA_DISTRIBUTION_GAMECARD;
+            else
+            {
+                fprintf(stderr, "Error: Invalid disttype: %s\n", optarg);
+                usage();
+            }
+            break;
         //case 14:
         //    break;
         case 15:
@@ -261,7 +271,7 @@ int main(int argc, char **argv)
             // Validating SDK Version
             if (settings.sdk_version < 0x000B0000)
             {
-                fprintf(stderr, "Error: invalid SDK version: %08" PRIX32 "\n"
+                fprintf(stderr, "Error: Invalid SDK version: %08" PRIX32 "\n"
                                 "SDK version must be equal or greater than: 000B0000\n",
                         settings.sdk_version);
                 exit(EXIT_FAILURE);
@@ -313,7 +323,7 @@ int main(int argc, char **argv)
                 settings.nca_sig = NCA_SIG_TYPE_RANDOM;
             else
             {
-                fprintf(stderr, "Error: invalid ncasig: %s\n", optarg);
+                fprintf(stderr, "Error: Invalid ncasig: %s\n", optarg);
                 usage();
             }
             break;

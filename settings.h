@@ -77,6 +77,12 @@ enum nca_sig_type
     NCA_SIG_TYPE_RANDOM = 2
 };
 
+enum nca_distribution_type
+{
+    NCA_DISTRIBUTION_DOWNLOAD = 0,
+    NCA_DISTRIBUTION_GAMECARD = 1
+};
+
 typedef struct
 {
     hp_keyset_t keyset;
@@ -119,6 +125,7 @@ typedef struct
     enum hp_file_type file_type;
     enum hp_title_type title_type;
     enum nca_sig_type nca_sig;
+    enum nca_distribution_type nca_disttype;
 } hp_settings_t;
 
 #endif
