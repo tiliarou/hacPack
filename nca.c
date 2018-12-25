@@ -259,7 +259,7 @@ void nca_create_program(hp_settings_t *settings)
     printf("Calculating Section hash\n");
     nca_calculate_section_hash(&nca_header.fs_headers[0], nca_header.section_hashes[0]);
 
-    if (settings->noromfs == 0)
+    if (settings->romfs_dir.valid == VALIDITY_VALID)
     {
 
         printf("\n---> Creating Section 1:");
@@ -327,7 +327,7 @@ void nca_create_program(hp_settings_t *settings)
         nca_calculate_section_hash(&nca_header.fs_headers[1], nca_header.section_hashes[1]);
     }
 
-    if (settings->nologo == 0)
+    if (settings->logo_dir.valid == VALIDITY_VALID)
     {
         printf("\n---> Creating Section 2:");
 
@@ -355,7 +355,7 @@ void nca_create_program(hp_settings_t *settings)
         // Write Padding if required
         nca_write_padding(program_nca_file);
 
-        if (settings->noromfs == 0)
+        if (settings->romfs_dir.valid == VALIDITY_VALID)
             nca_header.section_entries[2].media_start_offset = nca_header.section_entries[1].media_end_offset;
         else
             nca_header.section_entries[2].media_start_offset = nca_header.section_entries[0].media_end_offset;
@@ -399,7 +399,7 @@ void nca_create_program(hp_settings_t *settings)
     {
         printf("Encrypting section 0\n");
         nca_encrypt_section(program_nca_file, &nca_header, 0, settings);
-        if (settings->noromfs == 0)
+        if (settings->romfs_dir.valid == VALIDITY_VALID)
         {
             printf("Encrypting section 1\n");
             nca_encrypt_section(program_nca_file, &nca_header, 1, settings);

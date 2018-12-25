@@ -96,8 +96,6 @@ typedef struct
     filepath_t ncadir;
     filepath_t cnmt;
     filepath_t backup_dir;
-    uint8_t noromfs;
-    uint8_t nologo;
     uint8_t plaintext;
     uint8_t digest[0x20];
     uint32_t title_version;

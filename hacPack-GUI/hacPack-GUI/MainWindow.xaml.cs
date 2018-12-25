@@ -171,19 +171,6 @@ namespace hacPack_GUI
             browse_folder(ref txt_logodir);
         }
 
-        private void chk_noromfs_Checked(object sender, RoutedEventArgs e)
-        {
-            txt_romfsdir.IsEnabled = false;
-            txt_romfsdir.Text = string.Empty;
-            btn_browse_romfsdir.IsEnabled = false;
-        }
-
-        private void chk_noromfs_Unchecked(object sender, RoutedEventArgs e)
-        {
-            txt_romfsdir.IsEnabled = true;
-            btn_browse_romfsdir.IsEnabled = true;
-        }
-
         private void chk_nologo_Checked(object sender, RoutedEventArgs e)
         {
             txt_logodir.IsEnabled = false;
@@ -202,13 +189,9 @@ namespace hacPack_GUI
             txt_exefsdir.IsEnabled = true;
             txt_exefsdir.Text = string.Empty;
             btn_browse_exefsdir.IsEnabled = true;
-            chk_noromfs.IsEnabled = true;
-            chk_noromfs.IsChecked = false;
             txt_romfsdir.IsEnabled = true;
             txt_romfsdir.Text = string.Empty;
             btn_browse_romfsdir.IsEnabled = true;
-            chk_nologo.IsEnabled = true;
-            chk_nologo.IsChecked = false;
             txt_logodir.IsEnabled = true;
             txt_logodir.Text = string.Empty;
             btn_browse_logodir.IsEnabled = true;
@@ -219,13 +202,9 @@ namespace hacPack_GUI
             txt_exefsdir.IsEnabled = false;
             txt_exefsdir.Text = string.Empty;
             btn_browse_exefsdir.IsEnabled = false;
-            chk_noromfs.IsEnabled = false;
-            chk_noromfs.IsChecked = false;
             txt_romfsdir.IsEnabled = true;
             txt_romfsdir.Text = string.Empty;
             btn_browse_romfsdir.IsEnabled = true;
-            chk_nologo.IsEnabled = false;
-            chk_nologo.IsChecked = false;
             txt_logodir.IsEnabled = false;
             txt_logodir.Text = string.Empty;
             btn_browse_logodir.IsEnabled = false;
@@ -390,20 +369,12 @@ namespace hacPack_GUI
                     case "Program":
                         if (txt_exefsdir.Text == string.Empty)
                             System.Windows.MessageBox.Show("ExeFS directory path is empty", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
-                        else if (txt_romfsdir.Text == string.Empty && chk_noromfs.IsChecked == false)
-                            System.Windows.MessageBox.Show("RomFS directory path is empty", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
-                        else if (txt_logodir.Text == string.Empty && chk_nologo.IsChecked == false)
-                            System.Windows.MessageBox.Show("Logo directory path is empty", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
                         else
                         {
                             args = "--type nca --ncatype program --exefsdir \"" + txt_exefsdir.Text + "\" ";
-                            if (txt_romfsdir.Text == string.Empty)
-                                args += "--noromfs ";
-                            else
+                            if (txt_romfsdir.Text != string.Empty)
                                 args += "--romfsdir \"" + txt_romfsdir.Text + "\" ";
-                            if (txt_logodir.Text == string.Empty)
-                                args += "--nologo";
-                            else
+                            if (txt_logodir.Text != string.Empty)
                                 args += "--logodir \"" + txt_logodir.Text + "\"";
                             launch_hacpack(args);
                         }

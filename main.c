@@ -40,8 +40,6 @@ static void usage(void)
             "--exefsdir               Set program exefs directory path\n"
             "--romfsdir               Set program romfs directory path\n"
             "--logodir                Set program logo directory path\n"
-            "--noromfs                Skip creating program romfs section\n"
-            "--nologo                 Skip creating program logo section\n"
             "--titlekey               Set Titlekey for encrypting nca\n"
             "--nozeronpdmsig          Leave npdm signature and doesn't 0 it\n"
             "--nozeronpdmkey          Leave npdm nca key and doesn't 0 it\n"
@@ -134,8 +132,8 @@ int main(int argc, char **argv)
                 {"legalnca", 1, NULL, 10},
                 {"htmldocnca", 1, NULL, 11},
                 {"metanca", 1, NULL, 12},
-                {"noromfs", 0, NULL, 13},
-                {"nologo", 0, NULL, 14},
+                //{"", 0, NULL, 13},
+                //{"", 0, NULL, 14},
                 {"plaintext", 0, NULL, 15},
                 {"keygeneration", 1, NULL, 16},
                 {"sdkversion", 1, NULL, 17},
@@ -242,12 +240,10 @@ int main(int argc, char **argv)
         case 12:
             filepath_set(&settings.metanca, optarg);
             break;
-        case 13:
-            settings.noromfs = 1;
-            break;
-        case 14:
-            settings.nologo = 1;
-            break;
+        //case 13:
+        //    break;
+        //case 14:
+        //    break;
         case 15:
             settings.plaintext = 1;
             break;
@@ -433,10 +429,6 @@ int main(int argc, char **argv)
         {
         case NCA_TYPE_PROGRAM:
             if (settings.exefs_dir.valid == VALIDITY_INVALID)
-                usage();
-            else if (settings.romfs_dir.valid == VALIDITY_INVALID && settings.noromfs == 0)
-                usage();
-            else if (settings.logo_dir.valid == VALIDITY_INVALID && settings.nologo == 0)
                 usage();
             printf("----> Processing NPDM\n");
             npdm_process(&settings);

@@ -26,8 +26,6 @@
                     <Label x:Name="lbl_logodir" Content="Logo Directory:" HorizontalAlignment="Left" Margin="8,95,0,0" VerticalAlignment="Top" RenderTransformOrigin="0,0.561"/>
                     <TextBox x:Name="txt_logodir" HorizontalAlignment="Left" Height="22" Margin="102,97,0,0" TextWrapping="NoWrap" VerticalAlignment="Top" Width="208" IsReadOnly="True"/>
                     <Button x:Name="btn_browse_logodir" Content="Browse" HorizontalAlignment="Left" Margin="315,98,0,0" VerticalAlignment="Top" Width="102" Height="22" Click="btn_browse_logodir_Click" />
-                    <CheckBox x:Name="chk_noromfs" Content="noromfs" HorizontalAlignment="Left" Margin="427,73,0,0" VerticalAlignment="Top" Checked="chk_noromfs_Checked" Unchecked="chk_noromfs_Unchecked" />
-                    <CheckBox x:Name="chk_nologo" Content="nologo" HorizontalAlignment="Left" Margin="427,101,0,0" VerticalAlignment="Top" Checked="chk_nologo_Checked" Unchecked="chk_nologo_Unchecked"/>
                     <Button x:Name="btn_build_nca" Content="Build NCA" HorizontalAlignment="Left" Margin="579,201,0,0" VerticalAlignment="Top" Width="138" Click="btn_build_nca_Click" />
                     <Label x:Name="lbl_nca_type" Content="NCA Type:" HorizontalAlignment="Left" Margin="36,10,0,0" VerticalAlignment="Top"/>
                     <ComboBox x:Name="cmb_nca_type" HorizontalAlignment="Left" Margin="102,15,0,0" VerticalAlignment="Top" Width="208">
