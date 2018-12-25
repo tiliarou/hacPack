@@ -394,13 +394,15 @@ int main(int argc, char **argv)
     }
 
     // Make sure that titleid is within valid range
-    if (settings.title_id < 0x0100000000000000 || settings.title_id > 0x01ffffffffffffff)
+    if (settings.title_id < 0x0100000000000000 || settings.title_id > 0x0fffffffffffffff)
     {
         fprintf(stderr, "Error: Bad TitleID: %016" PRIx64 "\n"
-                        "Valid TitleID range: 0100000000000000 - 01ffffffffffffff\n",
+                        "Valid TitleID range: 0100000000000000 - 0fffffffffffffff\n",
                 settings.title_id);
         usage();
     }
+    if (settings.title_id > 0x01ffffffffffffff)
+        printf("Warning: TitleID %" PRIx64 " is greater than 01ffffffffffffff and it's not suggested\n", settings.title_id);
 
     // Make sure that outout directory is set
     if (settings.out_dir.valid == VALIDITY_INVALID)
