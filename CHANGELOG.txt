@@ -1,3 +1,8 @@
+v1.35
+Added option for setting nca distribution type to gamecard
+Removed --noromfs and --nologo options, hacPack now skips creating romfs and logo sections for program nca if romfsdir and logodir are not set
+Changed pfs0 padding size and hash table block size for better compatiblity and less nca size
+
 v1.33
 Added support for keygeneration 7
 Changed default ncasig to zero
