@@ -484,13 +484,25 @@ int main(int argc, char **argv)
                 usage();
             }
             else if ((settings.programnca.valid == VALIDITY_INVALID || settings.controlnca.valid == VALIDITY_INVALID) && settings.title_type == TITLE_TYPE_APPLICATION)
+            {
+                fprintf(stderr, "--programnca and/or --controlnca is not set\n");
                 usage();
+            }
             else if (settings.title_type == TITLE_TYPE_ADDON && settings.publicdatanca.valid == VALIDITY_INVALID)
+            {
+                fprintf(stderr, "--publicdatanca is not set\n");
                 usage();
+            }
             else if (settings.title_type == TITLE_TYPE_SYSTEMPROGRAM && settings.programnca.valid == VALIDITY_INVALID)
+            {
+                fprintf(stderr, "--programnca is not set\n");
                 usage();
+            }
             else if (settings.title_type == TITLE_TYPE_SYSTEMDATA && settings.datanca.valid == VALIDITY_INVALID)
+            {
+                fprintf(stderr, "--datanca is not set\n");
                 usage();
+            }
             else
                 nca_create_meta(&settings);
             break;
