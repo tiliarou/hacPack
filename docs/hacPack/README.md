@@ -5,7 +5,7 @@
 ### TitleID: --titleid
 
 Title id is 8-bytes hex value which connects ncas to each other.  
-Valid Title id range is: 0100000000000000 - 0fffffffffffffff  
+Valid Title id range is: 0100000000000000 - ffffffffffffffff  
 It's not recommended to use a TitleID higher than 01ffffffffffffff.  
 If you are repacking a nca, make sure to use the original title id of that nca.  
 

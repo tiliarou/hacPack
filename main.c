@@ -404,10 +404,10 @@ int main(int argc, char **argv)
     }
 
     // Make sure that titleid is within valid range
-    if (settings.title_id < 0x0100000000000000 || settings.title_id > 0x0fffffffffffffff)
+    if (settings.title_id < 0x0100000000000000)
     {
         fprintf(stderr, "Error: Bad TitleID: %016" PRIx64 "\n"
-                        "Valid TitleID range: 0100000000000000 - 0fffffffffffffff\n",
+                        "Valid TitleID range: 0100000000000000 - ffffffffffffffff\n",
                 settings.title_id);
         usage();
     }
@@ -481,13 +481,13 @@ int main(int argc, char **argv)
             nca_create_romfs_type(&settings, nca_romfs_get_type(settings.nca_type));
             break;
         case NCA_TYPE_META:
-            if (settings.title_type == 0)
+            if (settings.cnmt.valid == VALIDITY_VALID)
+                nca_create_meta(&settings);
+            else if (settings.title_type == 0)
             {
                 fprintf(stderr, "Error: invalid titletype\n");
                 usage();
             }
-            else if (settings.cnmt.valid == VALIDITY_VALID)
-                nca_create_meta(&settings);
             else if (settings.has_title_key)
             {
                 fprintf(stderr, "Titlekey is not supported for metadata nca\n");
