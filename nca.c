@@ -81,6 +81,8 @@ void nca_create_romfs_type(hp_settings_t *settings, char *nca_type)
     nca_header.content_type = settings->nca_type;
     nca_header.sdk_version = settings->sdk_version;
     nca_header.title_id = settings->title_id;
+    if (settings->nca_disttype == NCA_DISTRIBUTION_GAMECARD)
+        nca_header.distribution = 1;
     nca_set_keygen(&nca_header, settings);
 
     nca_header.section_entries[0].media_start_offset = 0x6;                                        // 0xC00 / 0x200
@@ -113,9 +115,9 @@ void nca_create_romfs_type(hp_settings_t *settings, char *nca_type)
     else
     {
         // Calculate RightsID
-        for (int ridc=0; ridc < 8; ridc++)
+        for (int ridc = 0; ridc < 8; ridc++)
         {
-            nca_header.rights_id[7-ridc] = (settings->title_id >> (8*ridc) & 0xff);
+            nca_header.rights_id[7 - ridc] = (settings->title_id >> (8 * ridc) & 0xff);
         }
         nca_header.rights_id[15] = (uint8_t)settings->keygeneration;
     }
@@ -216,10 +218,11 @@ void nca_create_program(hp_settings_t *settings)
     filepath_init(&program_exefs_hash_table);
     filepath_copy(&program_exefs_hash_table, &settings->temp_dir);
     filepath_append(&program_exefs_hash_table, "program_sec0_exefs_hashtable");
+    uint32_t exefs_hash_block_size = PFS0_EXEFS_HASH_BLOCK_SIZE;
     printf("\n===> Building ExeFS\n");
     pfs0_build(&settings->exefs_dir, &program_exefs, &nca_header.fs_headers[0].pfs0_superblock.pfs0_size);
     printf("Calculating hash table\n");
-    pfs0_create_hashtable(&program_exefs, &program_exefs_hash_table, &nca_header.fs_headers[0].pfs0_superblock.hash_table_size, &nca_header.fs_headers[0].pfs0_superblock.pfs0_offset);
+    pfs0_create_hashtable(&program_exefs, &program_exefs_hash_table, exefs_hash_block_size, &nca_header.fs_headers[0].pfs0_superblock.hash_table_size, &nca_header.fs_headers[0].pfs0_superblock.pfs0_offset);
 
     // Write ExeFS
     printf("\n===> Writing ExeFS\n");
@@ -236,6 +239,8 @@ void nca_create_program(hp_settings_t *settings)
     nca_header.content_type = 0x0; // Program
     nca_header.sdk_version = settings->sdk_version;
     nca_header.title_id = settings->title_id;
+    if (settings->nca_disttype == NCA_DISTRIBUTION_GAMECARD)
+        nca_header.distribution = 1;
     nca_set_keygen(&nca_header, settings);
 
     nca_header.section_entries[0].media_start_offset = 0x6;                                          // 0xC00 / 0x200
@@ -246,7 +251,7 @@ void nca_create_program(hp_settings_t *settings)
     nca_header.fs_headers[0].fs_type = FS_TYPE_PFS0;
     nca_header.fs_headers[0].version = 0x2; // Always 2
     nca_header.fs_headers[0].pfs0_superblock.always_2 = 0x2;
-    nca_header.fs_headers[0].pfs0_superblock.block_size = PFS0_HASH_BLOCK_SIZE;
+    nca_header.fs_headers[0].pfs0_superblock.block_size = exefs_hash_block_size;
     if (settings->plaintext == 0)
         nca_header.fs_headers[0].crypt_type = CRYPT_CTR;
     else
@@ -259,7 +264,7 @@ void nca_create_program(hp_settings_t *settings)
     printf("Calculating Section hash\n");
     nca_calculate_section_hash(&nca_header.fs_headers[0], nca_header.section_hashes[0]);
 
-    if (settings->noromfs == 0)
+    if (settings->romfs_dir.valid == VALIDITY_VALID)
     {
 
         printf("\n---> Creating Section 1:");
@@ -327,7 +332,7 @@ void nca_create_program(hp_settings_t *settings)
         nca_calculate_section_hash(&nca_header.fs_headers[1], nca_header.section_hashes[1]);
     }
 
-    if (settings->nologo == 0)
+    if (settings->logo_dir.valid == VALIDITY_VALID)
     {
         printf("\n---> Creating Section 2:");
 
@@ -340,10 +345,11 @@ void nca_create_program(hp_settings_t *settings)
         filepath_init(&program_logo_hash_table);
         filepath_copy(&program_logo_hash_table, &settings->temp_dir);
         filepath_append(&program_logo_hash_table, "program_sec2_logo_hashtable");
+        uint32_t logo_hash_block_size = PFS0_LOGO_HASH_BLOCK_SIZE;
         printf("\n===> Building PFS0\n");
         pfs0_build(&settings->logo_dir, &program_logo, &nca_header.fs_headers[2].pfs0_superblock.pfs0_size);
         printf("Calculating hash table\n");
-        pfs0_create_hashtable(&program_logo, &program_logo_hash_table, &nca_header.fs_headers[2].pfs0_superblock.hash_table_size, &nca_header.fs_headers[2].pfs0_superblock.pfs0_offset);
+        pfs0_create_hashtable(&program_logo, &program_logo_hash_table, logo_hash_block_size, &nca_header.fs_headers[2].pfs0_superblock.hash_table_size, &nca_header.fs_headers[2].pfs0_superblock.pfs0_offset);
 
         // Write PFS0
         printf("\n===> Writing Logo\n");
@@ -355,7 +361,7 @@ void nca_create_program(hp_settings_t *settings)
         // Write Padding if required
         nca_write_padding(program_nca_file);
 
-        if (settings->noromfs == 0)
+        if (settings->romfs_dir.valid == VALIDITY_VALID)
             nca_header.section_entries[2].media_start_offset = nca_header.section_entries[1].media_end_offset;
         else
             nca_header.section_entries[2].media_start_offset = nca_header.section_entries[0].media_end_offset;
@@ -368,7 +374,7 @@ void nca_create_program(hp_settings_t *settings)
         nca_header.fs_headers[2].version = 0x2;    // Always 2
         nca_header.fs_headers[2].crypt_type = 0x1; // Plain text
         nca_header.fs_headers[2].pfs0_superblock.always_2 = 0x2;
-        nca_header.fs_headers[2].pfs0_superblock.block_size = PFS0_HASH_BLOCK_SIZE;
+        nca_header.fs_headers[2].pfs0_superblock.block_size = logo_hash_block_size;
 
         // Calculate master hash and section hash
         printf("\n===> Calculating Hashes:\n");
@@ -386,9 +392,9 @@ void nca_create_program(hp_settings_t *settings)
     else
     {
         // Calculate RightsID
-        for (int ridc=0; ridc < 8; ridc++)
+        for (int ridc = 0; ridc < 8; ridc++)
         {
-            nca_header.rights_id[7-ridc] = (settings->title_id >> (8*ridc) & 0xff);
+            nca_header.rights_id[7 - ridc] = (settings->title_id >> (8 * ridc) & 0xff);
         }
         nca_header.rights_id[15] = (uint8_t)settings->keygeneration;
     }
@@ -399,7 +405,7 @@ void nca_create_program(hp_settings_t *settings)
     {
         printf("Encrypting section 0\n");
         nca_encrypt_section(program_nca_file, &nca_header, 0, settings);
-        if (settings->noromfs == 0)
+        if (settings->romfs_dir.valid == VALIDITY_VALID)
         {
             printf("Encrypting section 1\n");
             nca_encrypt_section(program_nca_file, &nca_header, 1, settings);
@@ -547,10 +553,11 @@ void nca_create_meta(hp_settings_t *settings)
     filepath_init(&meta_pfs0_hash_table);
     filepath_copy(&meta_pfs0_hash_table, &settings->temp_dir);
     filepath_append(&meta_pfs0_hash_table, "meta_sec0_pfs0_hashtable");
+    uint32_t meta_hash_block_size = PFS0_META_HASH_BLOCK_SIZE;
     printf("\n===> Building PFS0\n");
     pfs0_build(&cnmt_dir_path, &meta_pfs0, &nca_header.fs_headers[0].pfs0_superblock.pfs0_size);
     printf("Calculating hash table\n");
-    pfs0_create_hashtable(&meta_pfs0, &meta_pfs0_hash_table, &nca_header.fs_headers[0].pfs0_superblock.hash_table_size, &nca_header.fs_headers[0].pfs0_superblock.pfs0_offset);
+    pfs0_create_hashtable(&meta_pfs0, &meta_pfs0_hash_table, meta_hash_block_size, &nca_header.fs_headers[0].pfs0_superblock.hash_table_size, &nca_header.fs_headers[0].pfs0_superblock.pfs0_offset);
 
     // Write ExeFS
     printf("\n===> Writing PFS0 section\n");
@@ -567,6 +574,8 @@ void nca_create_meta(hp_settings_t *settings)
     nca_header.content_type = 0x1; // Meta
     nca_header.sdk_version = settings->sdk_version;
     nca_header.title_id = settings->title_id;
+    if (settings->nca_disttype == NCA_DISTRIBUTION_GAMECARD)
+        nca_header.distribution = 1;
     nca_set_keygen(&nca_header, settings);
 
     nca_header.section_entries[0].media_start_offset = 0x6;                                       // 0xC00 / 0x200
@@ -577,7 +586,7 @@ void nca_create_meta(hp_settings_t *settings)
     nca_header.fs_headers[0].fs_type = FS_TYPE_PFS0;
     nca_header.fs_headers[0].version = 0x2; // Always 2
     nca_header.fs_headers[0].pfs0_superblock.always_2 = 0x2;
-    nca_header.fs_headers[0].pfs0_superblock.block_size = PFS0_HASH_BLOCK_SIZE;
+    nca_header.fs_headers[0].pfs0_superblock.block_size = meta_hash_block_size;
     if (settings->plaintext == 0)
         nca_header.fs_headers[0].crypt_type = CRYPT_CTR;
     else
@@ -742,7 +751,7 @@ void nca_encrypt_section(FILE *nca_file, nca_header_t *nca_header, uint8_t secti
         ctr_ofs >>= 8;
     }
 
-    uint64_t read_size = 0x1000000; // 16 MB buffer.
+    uint64_t read_size = 0x6000000; //~100 MB buffer.
     unsigned char *buf = malloc(read_size);
     if (buf == NULL)
     {
@@ -847,16 +856,16 @@ void nca_generate_sig(uint8_t *nca_sig, hp_settings_t *settings)
 {
     switch (settings->nca_sig)
     {
-        case NCA_SIG_TYPE_DEFAULT:
-            memset(nca_sig, 4, 0x100);
-            break;
-        case NCA_SIG_TYPE_RANDOM:
-            srand(time(NULL));
-            for (long nsigc = 0; nsigc < 0x100; nsigc++)
-                nca_sig[nsigc] = rand() % 0xff;
-            break;
-        case NCA_SIG_TYPE_ZERO:
-            break;
+    case NCA_SIG_TYPE_STATIC:
+        memset(nca_sig, 4, 0x100);
+        break;
+    case NCA_SIG_TYPE_RANDOM:
+        srand(time(NULL));
+        for (long nsigc = 0; nsigc < 0x100; nsigc++)
+            nca_sig[nsigc] = rand() % 0xff;
+        break;
+    case NCA_SIG_TYPE_ZERO:
+        break;
     }
 }
 

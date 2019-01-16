@@ -11,11 +11,14 @@ typedef struct
     unsigned char secure_boot_key[0x10];                 /* Secure boot key for use in key derivation. NOTE: CONSOLE UNIQUE. */
     unsigned char tsec_key[0x10];                        /* TSEC key for use in key derivation. NOTE: CONSOLE UNIQUE. */
     unsigned char keyblob_keys[0x20][0x10];              /* Actual keys used to decrypt keyblobs. NOTE: CONSOLE UNIQUE.*/
-    unsigned char keyblob_mac_keys[0x20][0x10];          /* Keys used to validate keyblobs. NOTE: CONSOLE UNIQUE. */
-    unsigned char encrypted_keyblobs[0x20][0xB0];        /* Actual encrypted keyblobs (EKS). NOTE: CONSOLE UNIQUE. */
-    unsigned char keyblobs[0x20][0x90];                  /* Actual decrypted keyblobs (EKS). */
+    unsigned char keyblob_mac_keys[0x20][0x10];          /* Keys used to validate keyblobs. NOTE: CONSOLE UNIQUE. */ 
+    unsigned char encrypted_keyblobs[0x20][0xB0];        /* Actual encrypted keyblobs (EKS). NOTE: CONSOLE UNIQUE. */ 
+    unsigned char keyblobs[0x20][0x90];                  /* Actual decrypted keyblobs (EKS). */ 
     unsigned char keyblob_key_sources[0x20][0x10];       /* Seeds for keyblob keys. */
     unsigned char keyblob_mac_key_source[0x10];          /* Seed for keyblob MAC key derivation. */
+    unsigned char tsec_root_key[0x10];                   /* Seed for master kek decryption, from TSEC firmware on 6.2.0+. */
+    unsigned char master_kek_sources[0x20][0x10];        /* Seeds for firmware master keks. */
+    unsigned char master_keks[0x20][0x10];               /* Firmware master keks, stored in keyblob prior to 6.2.0. */
     unsigned char master_key_source[0x10];               /* Seed for master key derivation. */
     unsigned char master_keys[0x20][0x10];               /* Firmware master keys. */
     unsigned char package1_keys[0x20][0x10];             /* Package1 keys. */
@@ -30,14 +33,16 @@ typedef struct
     unsigned char header_kek_source[0x10];               /* Seed for header kek. */
     unsigned char sd_card_kek_source[0x10];              /* Seed for SD card kek. */
     unsigned char sd_card_key_sources[2][0x20];          /* Seed for SD card encryption keys. */
+    unsigned char save_mac_kek_source[0x10];             /* Seed for save kek. */
+    unsigned char save_mac_key_source[0x10];             /* Seed for save key. */
     unsigned char header_key_source[0x20];               /* Seed for NCA header key. */
     unsigned char header_key[0x20];                      /* NCA header key. */
     unsigned char titlekeks[0x20][0x10];                 /* Title key encryption keys. */
     unsigned char key_area_keys[0x20][3][0x10];          /* Key area encryption keys. */
     unsigned char sd_card_keys[2][0x20];
-    unsigned char nca_hdr_fixed_key_modulus[0x100];  /* NCA header fixed key RSA pubk. */
-    unsigned char acid_fixed_key_modulus[0x100];     /* ACID fixed key RSA pubk. */
-    unsigned char package2_fixed_key_modulus[0x100]; /* Package2 Header RSA pubk. */
+    unsigned char nca_hdr_fixed_key_modulus[0x100];      /* NCA header fixed key RSA pubk. */
+    unsigned char acid_fixed_key_modulus[0x100];         /* ACID fixed key RSA pubk. */
+    unsigned char package2_fixed_key_modulus[0x100];     /* Package2 Header RSA pubk. */
 } hp_keyset_t;
 
 enum hp_nca_type
@@ -67,9 +72,15 @@ enum hp_title_type
 
 enum nca_sig_type
 {
-    NCA_SIG_TYPE_DEFAULT = 0,
-    NCA_SIG_TYPE_ZERO = 1,
+    NCA_SIG_TYPE_ZERO = 0,
+    NCA_SIG_TYPE_STATIC = 1,
     NCA_SIG_TYPE_RANDOM = 2
+};
+
+enum nca_distribution_type
+{
+    NCA_DISTRIBUTION_DOWNLOAD = 0,
+    NCA_DISTRIBUTION_GAMECARD = 1
 };
 
 typedef struct
@@ -91,8 +102,6 @@ typedef struct
     filepath_t ncadir;
     filepath_t cnmt;
     filepath_t backup_dir;
-    uint8_t noromfs;
-    uint8_t nologo;
     uint8_t plaintext;
     uint8_t digest[0x20];
     uint32_t title_version;
@@ -116,6 +125,7 @@ typedef struct
     enum hp_file_type file_type;
     enum hp_title_type title_type;
     enum nca_sig_type nca_sig;
+    enum nca_distribution_type nca_disttype;
 } hp_settings_t;
 
 #endif

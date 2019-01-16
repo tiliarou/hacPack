@@ -30,7 +30,8 @@ static void usage(void)
             "--plaintext              Skip encrypting sections and set section header block crypto type to plaintext\n"
             "--sdkversion             Set SDK version in hex, default SDK version is 000C1100\n"
             "--keyareakey             Set key area key 2 in hex with 16 bytes length\n"
-            "--ncasig                 Set nca signature type [default, zero, random]\n"
+            "--ncasig                 Set nca signature type [zero, static, random]. Default is zero\n"
+            "--disttype               Set nca distribution type [download, gamecard]. Default is download\n"
             "Required options:\n"
             "-o, --output             Set output directory\n"
             "--type                   Set file type [nca, nsp]\n"
@@ -40,8 +41,6 @@ static void usage(void)
             "--exefsdir               Set program exefs directory path\n"
             "--romfsdir               Set program romfs directory path\n"
             "--logodir                Set program logo directory path\n"
-            "--noromfs                Skip creating program romfs section\n"
-            "--nologo                 Skip creating program logo section\n"
             "--titlekey               Set Titlekey for encrypting nca\n"
             "--nozeronpdmsig          Leave npdm signature and doesn't 0 it\n"
             "--nozeronpdmkey          Leave npdm nca key and doesn't 0 it\n"
@@ -134,8 +133,8 @@ int main(int argc, char **argv)
                 {"legalnca", 1, NULL, 10},
                 {"htmldocnca", 1, NULL, 11},
                 {"metanca", 1, NULL, 12},
-                {"noromfs", 0, NULL, 13},
-                {"nologo", 0, NULL, 14},
+                {"disttype", 1, NULL, 13},
+                //{"", 0, NULL, 14},
                 {"plaintext", 0, NULL, 15},
                 {"keygeneration", 1, NULL, 16},
                 {"sdkversion", 1, NULL, 17},
@@ -243,11 +242,18 @@ int main(int argc, char **argv)
             filepath_set(&settings.metanca, optarg);
             break;
         case 13:
-            settings.noromfs = 1;
+            if (!strcmp(optarg, "download"))
+                settings.nca_disttype = NCA_DISTRIBUTION_DOWNLOAD;
+            else if (!strcmp(optarg, "gamecard"))
+                settings.nca_disttype = NCA_DISTRIBUTION_GAMECARD;
+            else
+            {
+                fprintf(stderr, "Error: Invalid disttype: %s\n", optarg);
+                usage();
+            }
             break;
-        case 14:
-            settings.nologo = 1;
-            break;
+        //case 14:
+        //    break;
         case 15:
             settings.plaintext = 1;
             break;
@@ -265,7 +271,7 @@ int main(int argc, char **argv)
             // Validating SDK Version
             if (settings.sdk_version < 0x000B0000)
             {
-                fprintf(stderr, "Error: invalid SDK version: %08" PRIX32 "\n"
+                fprintf(stderr, "Error: Invalid SDK version: %08" PRIX32 "\n"
                                 "SDK version must be equal or greater than: 000B0000\n",
                         settings.sdk_version);
                 exit(EXIT_FAILURE);
@@ -309,15 +315,15 @@ int main(int argc, char **argv)
             settings.nozeroacidkey = 1;
             break;
         case 30:
-            if (!strcmp(optarg, "default"))
-                settings.nca_sig = NCA_SIG_TYPE_DEFAULT;
+            if (!strcmp(optarg, "static"))
+                settings.nca_sig = NCA_SIG_TYPE_STATIC;
             else if (!strcmp(optarg, "zero"))
                 settings.nca_sig = NCA_SIG_TYPE_ZERO;
             else if (!strcmp(optarg, "random"))
                 settings.nca_sig = NCA_SIG_TYPE_RANDOM;
             else
             {
-                fprintf(stderr, "Error: invalid ncasig: %s\n", optarg);
+                fprintf(stderr, "Error: Invalid ncasig: %s\n", optarg);
                 usage();
             }
             break;
@@ -346,38 +352,6 @@ int main(int argc, char **argv)
         return EXIT_FAILURE;
     }
 
-    // Make sure that key_area_key_application_keygen exists
-    uint8_t has_kek = 0;
-    for (unsigned int kekc = 0; kekc < 0x10; kekc++)
-    {
-        if (settings.keyset.key_area_keys[settings.keygeneration - 1][0][kekc] != 0)
-        {
-            has_kek = 1;
-            break;
-        }
-    }
-    if (has_kek == 0)
-    {
-        fprintf(stderr, "Error: key_area_key_application for keygeneration %i is not present in keyset file\n", settings.keygeneration);
-        return EXIT_FAILURE;
-    }
-
-    // Make sure that titlekek_keygen exists
-    uint8_t has_titlekek = 0;
-    for (unsigned int tkekc = 0; tkekc < 0x10; tkekc++)
-    {
-        if (settings.keyset.titlekeks[settings.keygeneration - 1][tkekc] != 0)
-        {
-            has_titlekek = 1;
-            break;
-        }
-    }
-    if (has_titlekek == 0)
-    {
-        fprintf(stderr, "Error: titlekek for keygeneration %i is not present in keyset file\n", settings.keygeneration);
-        return EXIT_FAILURE;
-    }
-
     // Make sure that header_key exists
     uint8_t has_header_Key = 0;
     for (unsigned int i = 0; i < 0x10; i++)
@@ -394,14 +368,51 @@ int main(int argc, char **argv)
         return EXIT_FAILURE;
     }
 
+    // Make sure that key_area_key_application_keygen exists
+    uint8_t has_kek = 0;
+    for (unsigned int kekc = 0; kekc < 0x10; kekc++)
+    {
+        if (settings.keyset.key_area_keys[settings.keygeneration - 1][0][kekc] != 0)
+        {
+            has_kek = 1;
+            break;
+        }
+    }
+    if (has_kek == 0)
+    {
+        fprintf(stderr, "Error: key_area_key_application for keygeneration %i is not present in keyset file\n", settings.keygeneration);
+        return EXIT_FAILURE;
+    }
+
+    // Make sure that titlekek_keygen exists if titlekey is specified
+    if (settings.has_title_key == 1)
+    {
+        uint8_t has_titlekek = 0;
+        for (unsigned int tkekc = 0; tkekc < 0x10; tkekc++)
+        {
+            if (settings.keyset.titlekeks[settings.keygeneration - 1][tkekc] != 0)
+            {
+                has_titlekek = 1;
+                break;
+            }
+        }
+        if (has_titlekek == 0)
+        {
+            fprintf(stderr, "Error: titlekek for keygeneration %i is not present in keyset file\n", settings.keygeneration);
+            return EXIT_FAILURE;
+        }
+    }
+
     // Make sure that titleid is within valid range
-    if (settings.title_id < 0x0100000000000000 || settings.title_id > 0x01ffffffffffffff)
+    if (settings.title_id < 0x0100000000000000)
     {
         fprintf(stderr, "Error: Bad TitleID: %016" PRIx64 "\n"
-                        "Valid TitleID range: 0100000000000000 - 01ffffffffffffff\n",
+                        "Valid TitleID range: 0100000000000000 - ffffffffffffffff\n",
                 settings.title_id);
         usage();
     }
+    if (settings.title_id > 0x01ffffffffffffff)
+        printf("Warning: TitleID %" PRIx64 " is greater than 01ffffffffffffff and it's not suggested\n", settings.title_id);
 
     // Make sure that outout directory is set
     if (settings.out_dir.valid == VALIDITY_INVALID)
@@ -430,10 +441,6 @@ int main(int argc, char **argv)
         {
         case NCA_TYPE_PROGRAM:
             if (settings.exefs_dir.valid == VALIDITY_INVALID)
-                usage();
-            else if (settings.romfs_dir.valid == VALIDITY_INVALID && settings.noromfs == 0)
-                usage();
-            else if (settings.logo_dir.valid == VALIDITY_INVALID && settings.nologo == 0)
                 usage();
             printf("----> Processing NPDM\n");
             npdm_process(&settings);
@@ -474,26 +481,38 @@ int main(int argc, char **argv)
             nca_create_romfs_type(&settings, nca_romfs_get_type(settings.nca_type));
             break;
         case NCA_TYPE_META:
-            if (settings.title_type == 0)
+            if (settings.cnmt.valid == VALIDITY_VALID)
+                nca_create_meta(&settings);
+            else if (settings.title_type == 0)
             {
                 fprintf(stderr, "Error: invalid titletype\n");
                 usage();
             }
-            else if (settings.cnmt.valid == VALIDITY_VALID)
-                nca_create_meta(&settings);
             else if (settings.has_title_key)
             {
                 fprintf(stderr, "Titlekey is not supported for metadata nca\n");
                 usage();
             }
             else if ((settings.programnca.valid == VALIDITY_INVALID || settings.controlnca.valid == VALIDITY_INVALID) && settings.title_type == TITLE_TYPE_APPLICATION)
+            {
+                fprintf(stderr, "--programnca and/or --controlnca is not set\n");
                 usage();
+            }
             else if (settings.title_type == TITLE_TYPE_ADDON && settings.publicdatanca.valid == VALIDITY_INVALID)
+            {
+                fprintf(stderr, "--publicdatanca is not set\n");
                 usage();
+            }
             else if (settings.title_type == TITLE_TYPE_SYSTEMPROGRAM && settings.programnca.valid == VALIDITY_INVALID)
+            {
+                fprintf(stderr, "--programnca is not set\n");
                 usage();
+            }
             else if (settings.title_type == TITLE_TYPE_SYSTEMDATA && settings.datanca.valid == VALIDITY_INVALID)
+            {
+                fprintf(stderr, "--datanca is not set\n");
                 usage();
+            }
             else
                 nca_create_meta(&settings);
             break;

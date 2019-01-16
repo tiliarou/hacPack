@@ -1,3 +1,20 @@
+v1.36
+Fixed a bug cause titletype error when creating metadata nca with cnmt
+Changed Valid titleid range
+
+v1.35
+Added option for setting nca distribution type to gamecard
+Removed --noromfs and --nologo options, hacPack now skips creating romfs and logo sections for program nca if romfsdir and logodir are not set
+Changed pfs0 padding size and hash table block size for better compatiblity and less nca size
+
+v1.33
+Added support for keygeneration 7
+Changed default ncasig to zero
+
+v1.32
+Changed hash block size for better compatibility
+Increased NCA section encryption buffer size
+
 v1.31
 Fixed a bug cause invalid IVFC level 6 when romfs section is big
 

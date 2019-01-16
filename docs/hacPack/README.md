@@ -4,9 +4,10 @@
 
 ### TitleID: --titleid
 
-Title id is 8-bytes hex value which connects ncas to each other  
-Valid Title id range is: 0100000000000000 - 01ffffffffffffff  
-If you are repacking ncas, make sure to use the original title id of nca  
+Title id is 8-bytes hex value which connects ncas to each other.  
+Valid Title id range is: 0100000000000000 - ffffffffffffffff  
+It's not recommended to use a TitleID higher than 01ffffffffffffff.  
+If you are repacking a nca, make sure to use the original title id of that nca.  
 
 ##### Switch TitleID template:
 
@@ -16,25 +17,29 @@ AddOn(DLC): Application + 0x1000 + 0x01-0xff
 
 ### Type: --type
 
-If you want to create a NCA, use --type nca, Otherwise if you want to create a NSP, use --type nsp  
+If you want to create a NCA, use --type nca, Otherwise if you want to create a NSP, use --type nsp.  
 
 ## NCA Options
 
 ### NCA signature: --ncasig
 
-By default, hacPack fills nca signature with 0x04, you can use --ncasig random to fill it with random bytes or --ncasig zero to fill it with all zero bytes
+By default, hacPack fills nca signature with zero, you can use --ncasig random to fill it with random bytes or --ncasig static to fill it with 0x4.  
+
+### NCA distribution type: --disttype
+
+Default nca distribution type is download, you can change it to gamecard with --disttype gamecard if you want to pack nca in xci.  
 
 ### Key area key 2: --keyareakey
 
 This is 16-bytes key which hacPack use to encrypt sections.  
-There's a default key area key 2 in hacPack and you can change it by --keyareakey option.
+There's a default key area key 2 in hacPack and you can change it by --keyareakey option.  
 
 ### Crypto type: --titlekey
 
 Titlekey size is 16 bytes  
-If no titlekey is specified, hacPack creates standard crypto nca and uses key area key 2 to encrypt sections  
-Otherwise, hacPack creates titlekey crypto nca and use titlekey to encrypt sections  
-Titlekey is only supported on Program, Manual(HtmlDocument) and PublicData ncas  
+If no titlekey is specified, hacPack creates standard crypto nca and uses key area key 2 to encrypt sections.  
+Otherwise, hacPack creates titlekey crypto nca and use titlekey to encrypt sections.  
+Titlekey is only supported on Program, Manual(HtmlDocument) and PublicData ncas.  
 
 ### Section encryption type: --plaintext
 
